@@ -1,0 +1,2092 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>科研工作台（多语言）</title>
+<style>
+  :root{
+    --bg:#f4f6fb; --panel:#ffffff; --ink:#1f2430; --sub:#6b7280; --line:#e6e9f0;
+    --brand:#4f46e5; --brand-soft:#eef0ff; --shadow:0 1px 3px rgba(17,24,39,.06),0 8px 24px rgba(17,24,39,.06);
+    --radius:14px;
+    --gray:#94a3b8; --blue:#2563eb; --purple:#7c3aed; --orange:#ea580c; --teal:#0d9488;
+    --green:#16a34a; --red:#dc2626; --amber:#d97706;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg);color:var(--ink);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:24px 20px 80px}
+  /* header */
+  header.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#6366f1,#8b5cf6);
+    display:grid;place-items:center;color:#fff;font-size:22px;box-shadow:0 6px 16px rgba(99,102,241,.35)}
+  .brand h1{font-size:19px;margin:0;font-weight:700;letter-spacing:.2px}
+  .brand p{margin:2px 0 0;color:var(--sub);font-size:12.5px}
+  .top-actions{display:flex;gap:8px;flex-wrap:wrap}
+  button{font-family:inherit;cursor:pointer;border:none;border-radius:10px;font-size:13.5px;transition:.15s}
+  .btn{padding:9px 15px;background:var(--panel);border:1px solid var(--line);color:var(--ink);display:inline-flex;align-items:center;gap:6px;box-shadow:var(--shadow)}
+  .btn:hover{border-color:#cfd4e2;transform:translateY(-1px)}
+  .btn.primary{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:0 6px 16px rgba(79,70,229,.3)}
+  .btn.primary:hover{background:#4338ca}
+  .btn.ghost{background:transparent;box-shadow:none}
+  .btn.sm{padding:6px 10px;font-size:12.5px}
+  .btn.danger{color:var(--red)}
+  .btn.danger:hover{background:#fef2f2;border-color:#fecaca}
+
+  /* stats */
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:16px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+  .stat .k{font-size:12.5px;color:var(--sub);display:flex;align-items:center;gap:6px}
+  .stat .v{font-size:26px;font-weight:750;margin-top:6px;letter-spacing:.5px}
+  .stat .v small{font-size:13px;color:var(--sub);font-weight:500;margin-left:4px}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+
+  .charts{display:grid;grid-template-columns:1.1fr 1fr;gap:14px;margin-bottom:20px}
+  .charts .span2{grid-column:1/-1}
+  @media(max-width:820px){.charts{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .chart-card{padding:16px 18px}
+  .chart-card h3{margin:0 0 12px;font-size:14px;font-weight:650;display:flex;align-items:center;gap:7px}
+  .chart-card.compact{padding:11px 13px}
+  .chart-card.compact h3{font-size:12.5px;margin-bottom:9px;gap:6px}
+  .chart-card.compact .legend{font-size:11px;margin-top:8px}
+  .legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:10px;font-size:12px;color:var(--sub)}
+  .legend span{display:flex;align-items:center;gap:5px}
+
+  /* toolbar */
+  .toolbar{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+  .search{flex:1;min-width:200px;position:relative}
+  .search input{width:100%;padding:10px 12px 10px 34px;border:1px solid var(--line);border-radius:10px;font-size:13.5px;background:var(--panel)}
+  .search input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+  .search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--sub)}
+  select.filter{padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font-size:13.5px;color:var(--ink)}
+  select.filter:focus{outline:none;border-color:var(--brand)}
+
+  /* list */
+  .list{display:flex;flex-direction:column;gap:12px}
+  .paper-card,.sub{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .paper-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--gray)}
+  .paper-card.s-accepted::before{background:var(--green)} .paper-card.s-rejected::before{background:var(--red)}
+  .paper-card.s-review::before{background:var(--purple)} .paper-card.s-prep::before{background:var(--gray)}
+  .paper-card.s-withdrawn::before{background:#64748b}
+  .sub::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--gray)}
+  .sub.s-accepted::before{background:var(--green)} .sub.s-rejected::before{background:var(--red)}
+  .sub.s-review::before{background:var(--purple)} .sub.s-submitted::before{background:var(--blue)}
+  .sub.s-major::before{background:var(--orange)} .sub.s-minor::before{background:var(--teal)}
+  .sub.s-prep::before{background:var(--gray)} .sub.s-withdrawn::before{background:#64748b}
+  .sub-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+  .sub-title{font-size:15.5px;font-weight:680;margin:0 0 4px;line-height:1.4}
+  .journal-line{color:var(--sub);font-size:13px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .badge{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:20px;font-size:11.5px;font-weight:600;white-space:nowrap}
+  .b-zone{background:#fef3c7;color:#92400e} .b-if{background:#dbeafe;color:#1e40af}
+  .b-zone2{background:#f1f5f9;color:#64748b;font-weight:500}
+  .level-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+  .lvl-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border:1px solid #e2e8f0;border-radius:20px;font-size:12.5px;cursor:pointer;user-select:none;background:#fff;transition:.15s}
+  .lvl-chip:hover{border-color:#cbd5e1;background:#f8fafc}
+  .lvl-chip:has(input:checked){border-color:var(--brand);background:#eef2ff}
+  .lvl-chip input{accent-color:var(--brand);margin:0}
+  .lv-dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+  .status-badge{padding:4px 11px;border-radius:20px;font-size:12px;font-weight:650;color:#fff;white-space:nowrap}
+  .st-prep{background:var(--gray)} .st-submitted{background:var(--blue)} .st-review{background:var(--purple)}
+  .st-major{background:var(--orange)} .st-minor{background:var(--teal)} .st-accepted{background:var(--green)}
+  .st-rejected{background:var(--red)} .st-withdrawn{background:#64748b}
+  .meta{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;font-size:12.5px;color:var(--sub)}
+  .meta b{color:var(--ink);font-weight:600}
+  .deadline-tag{padding:3px 10px;border-radius:8px;font-weight:600;font-size:12px}
+  .dl-soon{background:#fffbeb;color:var(--amber);border:1px solid #fde68a}
+  .dl-over{background:#fef2f2;color:var(--red);border:1px solid #fecaca}
+  .dl-ok{background:#f1f5f9;color:var(--sub)}
+  .sub-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+  .coauthors{color:var(--sub);font-size:12.5px;margin-top:6px}
+  .en-title{font-size:12.5px;color:var(--sub);font-weight:500;margin-top:4px;line-height:1.4}
+  .lang-badge{display:inline-block;background:#eef2ff;color:#4338ca;padding:1px 8px;border-radius:6px;font-size:11px;font-weight:600;margin-left:6px}
+
+  /* timeline */
+  .timeline{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);display:none}
+  .timeline.open{display:block}
+  .tl-item{display:flex;gap:12px;padding:7px 0;position:relative}
+  .tl-item:not(:last-child)::after{content:"";position:absolute;left:5px;top:20px;bottom:-7px;width:2px;background:var(--line)}
+  .tl-dot{width:12px;height:12px;border-radius:50%;margin-top:4px;flex-shrink:0;border:2px solid #fff;box-shadow:0 0 0 1px var(--line)}
+  .tl-body{flex:1}
+  .tl-body .t{font-size:13px;font-weight:600}
+  .tl-body .d{font-size:12px;color:var(--sub)}
+  .tl-body .n{font-size:12.5px;color:#4b5563;margin-top:3px;white-space:pre-wrap}
+  .tl-acts{margin-left:auto;display:flex;gap:4px;align-items:flex-start;flex-shrink:0}
+  .tl-acts .a-flag{padding:2px 7px;font-size:12px}
+  .tl-acts .a-del{font-size:15px;padding:0 4px}
+  .round-chip{display:inline-block;background:var(--brand-soft);color:var(--brand);padding:1px 8px;border-radius:6px;font-size:11px;font-weight:600;margin-left:6px}
+
+  /* paper view */
+  .back-btn{display:inline-flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-size:13.5px;box-shadow:var(--shadow);margin-bottom:16px}
+  .back-btn:hover{border-color:#cfd4e2}
+  .paper-head{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);margin-bottom:16px;display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap}
+  .paper-head h2{margin:0 0 6px;font-size:20px;font-weight:720}
+  .paper-subtitle{margin:-2px 0 8px;line-height:1.4}
+  .paper-head .pa{color:var(--sub);font-size:13px}
+  .paper-notes{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);font-size:13px;color:#475569;white-space:pre-wrap}
+  .paper-notes.empty{color:var(--sub);font-style:italic}
+  .paper-charts{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;margin-bottom:16px}
+  @media(max-width:820px){.paper-charts{grid-template-columns:1fr}}
+
+  /* empty */
+  .empty{text-align:center;padding:70px 20px;color:var(--sub)}
+  .empty .ic{font-size:52px;opacity:.5}
+  .empty h3{margin:14px 0 6px;color:var(--ink);font-weight:650}
+
+  /* modal */
+  .overlay{position:fixed;inset:0;background:rgba(17,24,39,.45);backdrop-filter:blur(2px);display:none;align-items:flex-start;justify-content:center;z-index:50;padding:40px 16px;overflow:auto}
+  .overlay.open{display:flex}
+  .modal{background:var(--panel);border-radius:16px;width:100%;max-width:560px;box-shadow:0 24px 60px rgba(0,0,0,.25);animation:pop .18s ease}
+  @keyframes pop{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+  .modal-head{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+  .modal-head h2{margin:0;font-size:16.5px;font-weight:700}
+  .modal-body{padding:20px 22px;max-height:65vh;overflow:auto}
+  .modal-foot{padding:14px 22px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px}
+  .field{margin-bottom:15px}
+  .field label{display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;color:#374151}
+  .field label .opt{color:var(--sub);font-weight:400}
+  .field input,.field select,.field textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:9px;font-size:13.5px;font-family:inherit;background:var(--panel);color:var(--ink)}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+  .field textarea{resize:vertical;min-height:70px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  @media(max-width:520px){.row2,.row3{grid-template-columns:1fr}}
+  .journal-input{display:flex;gap:8px}
+  .journal-input input{flex:1}
+  .hint{font-size:11.5px;color:var(--sub);margin-top:5px}
+  .hint.err{color:var(--red)} .hint.ok{color:var(--green)}
+  .x{background:none;border:none;font-size:22px;color:var(--sub);cursor:pointer;line-height:1;padding:0 4px}
+  .key-status{font-size:12px;padding:3px 9px;border-radius:6px;background:#f1f5f9;color:var(--sub)}
+  .key-status.set{background:#dcfce7;color:var(--green)}
+  .divider{display:flex;align-items:center;gap:10px;margin:18px 0 14px;color:var(--sub);font-size:12.5px;font-weight:600}
+  .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+  a{color:var(--brand)}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 20px;border-radius:10px;font-size:13.5px;opacity:0;transition:.25s;z-index:100;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  /* 学科多选（combobox 文本框匹配） */
+  .combo{position:relative}
+  .combo-input{width:100%}
+  .combo-menu{position:absolute;top:calc(100% + 4px);left:0;right:0;max-height:240px;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(20,30,60,.12);z-index:30;padding:4px}
+  .combo-item{padding:7px 10px;border-radius:7px;cursor:pointer;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .combo-item:hover{background:#f1f5ff}
+  .combo-item.on{background:#eef2ff;color:var(--brand);font-weight:600}
+  .combo-item .tick{color:var(--brand);font-weight:700}
+  .combo-add{padding:7px 10px;border-radius:7px;cursor:pointer;font-size:13px;color:#047857;font-weight:600}
+  .combo-add:hover{background:#ecfdf5}
+  .combo-empty{padding:8px 10px;color:var(--sub);font-size:12.5px}
+  .disc-sel-wrap{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+  .disc-sel{display:inline-flex;align-items:center;gap:5px;padding:4px 6px 4px 11px;border-radius:20px;background:var(--brand);color:#fff;font-size:12.5px;font-weight:600}
+  .disc-sel .x{border:none;background:rgba(255,255,255,.25);color:#fff;width:18px;height:18px;border-radius:50%;cursor:pointer;line-height:1;font-size:13px;flex-shrink:0}
+  .disc-sel .x:hover{background:rgba(255,255,255,.45)}
+  /* 作者模块 */
+  .author-box{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+  .author-chip{display:inline-flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:13px}
+  .author-chip .a-role{color:var(--sub);font-size:12px}
+  .author-chip.edit{justify-content:space-between}
+  .author-chip .a-flags{display:flex;align-items:center;gap:6px}
+  .author-chip.edit{cursor:grab}
+  .author-chip.edit:active{cursor:grabbing}
+  .author-chip.edit.drag-over{outline:2px dashed var(--brand);outline-offset:2px;background:#eef2ff}
+  .author-chip .a-name{cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+  .author-chip .a-name:hover{text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px}
+  .author-chip .a-edit-pen{color:var(--sub);font-size:11px;opacity:.45}
+  .author-chip .a-name:hover .a-edit-pen{opacity:1}
+  .author-edit-input{font-size:13px;padding:2px 6px;border:1px solid var(--brand);border-radius:6px;width:130px;outline:none}
+  .ae-edit{display:inline-flex;align-items:center;gap:5px}
+  .ae-btn{width:24px;height:24px;border:1px solid var(--line);background:var(--panel);border-radius:6px;cursor:pointer;font-size:13px;line-height:1;display:inline-flex;align-items:center;justify-content:center;color:var(--ink)}
+  .ae-btn:hover{border-color:var(--brand)}
+  .ae-btn.ae-x{color:var(--red)}
+  .drag-grip{color:#94a3b8;font-size:13px;letter-spacing:-2px;cursor:grab;user-select:none;padding:0 2px}
+  .drag-grip:hover{color:var(--brand)}
+  .a-flag{font-size:11.5px;padding:3px 9px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--sub);cursor:pointer;transition:.15s}
+  .a-flag:hover{border-color:#cfd4e2}
+  .a-flag.on{background:var(--brand);border-color:var(--brand);color:#fff}
+  .a-del{font-size:16px;color:var(--red);background:none;border:none;cursor:pointer;line-height:1;padding:0 4px}
+  .clog-ver{padding:12px 0;border-bottom:1px solid var(--line)}
+  .clog-ver:last-child{border-bottom:none}
+  .clog-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .clog-v{font-weight:720;font-size:15px;color:var(--brand)}
+  .clog-date{font-size:12.5px;color:var(--sub)}
+  .clog-cur{font-size:11px;background:var(--green);color:#fff;padding:1px 8px;border-radius:8px}
+  .clog-items{margin:0;padding-left:18px;color:#475569;font-size:13px;line-height:1.9}
+  .clog-items li{margin:0}
+  .author-chips-inline{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+  .author-chips-inline .author-chip{background:#f8fafc}
+  /* 工作中状态卡片描边 */
+  .paper-card.s-working{border-left-color:var(--amber)}
+  /* 分组折叠 */
+  .group-head{display:flex;align-items:center;gap:10px;padding:12px 14px;margin:18px 0 10px;background:var(--panel);border:1px solid var(--line);border-radius:11px;cursor:pointer;box-shadow:var(--shadow);font-weight:650}
+  .group-head .g-caret{transition:.2s;color:var(--sub)}
+  .group-head.collapsed .g-caret{transform:rotate(-90deg)}
+  .group-head .g-count{margin-left:auto;font-size:12.5px;color:var(--sub);font-weight:600;background:#f1f5f9;padding:2px 10px;border-radius:20px}
+  .group-body{display:block}
+  .group-head.collapsed + .group-body{display:none}
+  /* 工作中面板 */
+  .work-panel{background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:18px;margin-bottom:16px;color:#92400e}
+  .work-panel b{color:#b45309}
+  .foot{text-align:center;color:var(--sub);font-size:12px;margin-top:36px}
+  .foot .dev-id{margin-top:4px;color:var(--brand);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="logo">&#128218;</div>
+      <div>
+        <h1>科研工作台（多语言）</h1>
+        <p>本地记录 · 数据仅存本机 · 每篇论文独立文件夹 · 支持期刊等级（JCR / CSSCI 等）自动匹配</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <select class="filter" id="langSwitch" onchange="setLang(this.value)" title="语言 / Language"></select>
+      <button class="btn ghost" id="btnChangelog" title="更新日志">&#128220; 更新日志</button>
+      <button class="btn" id="btnSettings">&#9881;&#65039; 期刊API设置</button>
+      <button class="btn" id="btnImport">&#128229; 导入</button>
+      <button class="btn" id="btnExport">&#128228; 导出</button>
+      <button class="btn primary" id="btnAdd">&#43; 新增项目</button>
+    </div>
+  </header>
+
+  <!-- ===== 全局视图 ===== -->
+  <div id="globalOnly">
+    <div class="stat-grid" id="statGrid"></div>
+
+    <div class="charts">
+      <div class="card chart-card">
+        <h3>&#128202; <span data-i18n="chartStatus">投稿状态分布</span></h3>
+        <div id="donut"></div>
+      </div>
+      <div class="card chart-card">
+        <h3>&#127942; <span data-i18n="chartLevel">期刊等级分布</span></h3>
+        <div id="bars"></div>
+      </div>
+      <div class="card chart-card compact">
+        <h3>&#127942; <span data-i18n="chartAccepted">已接收成果期刊等级分布</span> <span class="opt" style="font-weight:400;font-size:11px" data-i18n="chartAcceptedNote">（仅统计「已接收」状态）</span></h3>
+        <div id="barsAccepted"></div>
+      </div>
+      <div class="card chart-card compact">
+        <h3>&#128202; <span data-i18n="chartJournalTop">投稿期刊 TOP 5</span> <span style="font-weight:400;font-size:11px;color:var(--sub)" data-i18n="chartJournalNote">（投稿次数最多的5个期刊）</span>
+          <select id="journalStatsSort" class="filter" style="margin-left:auto;padding:3px 7px;font-size:11px">
+            <option value="count" data-i18n="sortCount">按投稿次数</option>
+            <option value="rate" data-i18n="sortRate">按命中率</option>
+          </select>
+        </h3>
+        <div id="journalStats"></div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>
+        <input id="search" type="text" placeholder="搜索项目名 / 论文标题 / 期刊 / 作者…">
+      </div>
+      <select class="filter" id="filterAuthor">
+        <option value="">全部作者</option>
+      </select>
+      <select class="filter" id="filterStatus">
+        <option value="">全部状态</option>
+      </select>
+      <select class="filter" id="filterDiscipline">
+        <option value="">全部学科</option>
+      </select>
+      <select class="filter" id="filterYear">
+        <option value="">全部年度</option>
+      </select>
+      <select class="filter" id="groupBy">
+        <option value="none">不分组</option>
+        <option value="year">按年度分组</option>
+        <option value="discipline">按学科分组</option>
+        <option value="author">按作者分组</option>
+        <option value="status">按状态分组</option>
+      </select>
+      <select class="filter" id="sortBy">
+        <option value="updated">按更新时间</option>
+        <option value="submit">按首次投稿</option>
+        <option value="title">按项目名</option>
+      </select>
+    </div>
+
+    <div class="list" id="list"></div>
+  </div>
+  <div class="foot" id="foot"></div>
+
+  <!-- ===== 论文文件夹视图 ===== -->
+  <div id="paperOnly" style="display:none">
+    <button class="back-btn" id="btnBack">&#8592; 返回全部论文</button>
+    <div class="paper-head">
+      <div style="flex:1;min-width:0">
+        <h2 id="pTitle"></h2>
+        <div id="pSubTitle" class="paper-subtitle"></div>
+        <div class="pa" id="pAuthors"></div>
+        <div class="paper-notes empty" id="pNotes"></div>
+      </div>
+      <button class="btn" id="btnEditPaper">&#9998; 编辑项目信息</button>
+    </div>
+
+    <div class="stat-grid" id="pStats"></div>
+
+    <div class="paper-charts" id="paperCharts">
+      <div class="card chart-card">
+        <h3>&#128202; 该论文投稿状态分布</h3>
+        <div id="pDonut"></div>
+      </div>
+      <div class="card chart-card">
+        <h3>&#128260; 投稿历程</h3>
+        <div id="pHistory" style="font-size:13px;color:var(--sub)"></div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div style="font-size:13.5px;color:var(--sub);font-weight:600">投稿记录</div>
+      <div style="flex:1"></div>
+      <button class="btn primary" id="btnNewSub">&#8617; 转投 / 新投稿</button>
+    </div>
+
+    <div class="list" id="pList"></div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===================== 常量 & 状态定义 ===================== */
+const STORE_KEY = 'acadSubTracker.v2';
+const V1_KEY    = 'acadSubTracker.v1';
+const KEY_KEY   = 'acadSubTracker.secretKey';
+const AUTHORS_MEM_KEY = 'acadSubTracker.authors';   // 记忆的合作者姓名
+const SELF_KEY  = 'acadSubTracker.self';            // 本人姓名
+const APP_VERSION = '1.1';
+
+/* ===================== 更新日志 ===================== */
+const CHANGELOG = [
+  { v:'1.1', date:'2026-07-17', items:[
+    '同步本地版（主线 v2.1.2）新功能：新增「投稿期刊 TOP 5」统计模块——自动统计各期刊的投稿次数与命中次数（已接收），以双柱状图展示（蓝=投稿次数，绿=命中次数）并显示命中率',
+    '排序方式可选：默认按投稿次数；可切换为按命中率排序，切换即时刷新；投稿次数相同时先按期刊分区优先级（如 JCR Q1 > Q2）、再按影响因子排序，「按命中率」下该规则作为 tie-breaker 同样生效',
+    '布局调整：将「已接收成果期刊等级分布」由整行独占改为并排半宽，与新增的「投稿期刊 TOP 5」并排显示在图表区同一行（其余两张图表仍各占一列）',
+    '全部新增界面文案均补齐简体中文 / 繁體中文（香港）双语 key，语言切换实时生效',
+  ]},
+  { v:'1.0.4', date:'2026-07-17', items:[
+    '修复：v1.0.3 的 CHANGELOG 文案含字面量闭合标签序列，导致浏览器提前结束脚本标签、整段脚本与全部交互失效（应用无法加载）的严重缺陷；改为不含闭合标签序列的写法',
+    '修复：页脚存储说明改为随语言切换实时重渲染（新增 renderFooter 接入 setLang），此前仅在初始化时构建一次、切换语言后不更新',
+    '验证：用 jsdom 实跑页面，确认加载零运行时错误、语言切换器正常、图表与带数据渲染正常、状态标签双语化正常',
+  ]},
+  { v:'1.0.3', date:'2026-07-17', items:[
+    '维护：页脚存储说明改为随界面语言切换（简中「数据保存在本机浏览器」/ 港繁「資料儲存於本機瀏覽器」），移除 v1.0.1 时期遗留的英文界面死分支',
+    '维护：重生成源码 MD，修复与开发版 HTML 长期偏离（缺失开头文档声明与 head、结尾闭合标签）的同步偏差，恢复逐字节一致',
+    '维护：更新项目 README，对齐实际 v1.0.3 状态（简中 + 港繁双版本、i18n 已完成、英文独立成册）',
+  ]},
+  { v:'1.0.2', date:'2026-07-17', items:[
+    '依据部署策略调整：多语言版仅保留简体中文与繁體中文（香港）两种界面语言，移除以英文为界面的内置方案',
+    '繁體中文语言包改为香港繁体用语（如「記錄」「網絡」「帳戶」等），切换器标注「繁體中文（香港）」',
+    '英文界面作为独立项目「科研工作台（英文版）」单独开发，去除依赖国内服务的 easyScholar 自动匹配、CSSCI / CSCD / CCF / 北大核心 / 中文普刊等中文学术等级体系',
+  ]},
+  { v:'1.0.1', date:'2026-07-17', items:[
+    '新增多语言支持：界面文案支持简体中文 / 繁體中文 / English 三种语言，右上角下拉实时切换',
+    '语言选择持久化到 localStorage，刷新后保持；状态标签（投稿状态/论文状态）、统计卡片、图表、弹窗、提示等全部随语言刷新',
+    '新增 i18n 语言包架构（I18N 对象 + t() 翻译函数 + setLang() 切换 + applyStaticI18n() 静态文案刷新）',
+  ]},
+  { v:'1.0.0', date:'2026-07-17', items:[
+    '初始版本：从「科研工作台 v2.0.3」派生，作为多语言项目开发版（科研工作台（多语言）v1.0.0）',
+    '沿用 v2.0.3 全部功能：论文文件夹 + 多篇投稿两层模型、双语标题、作者位次/共一/通讯、期刊等级多选与优先级、easyScholar 自动匹配、学科 JCR 中英对照、统计图表与 CSV/JSON 导入导出',
+  ]},
+];
+
+/* ===================== 多语言 i18n ===================== */
+const I18N_KEY = 'acadSubTracker.lang';
+const LANGS = [
+  {code:'zh-CN', label:'简体中文'},
+  {code:'zh-TW', label:'繁體中文（香港）'},
+];
+// 三套语言包：界面文案（数据字段如状态/学科本身已是结构化，不在此重复）
+const I18N = {
+  'zh-CN': {
+    appSub: '本地记录 · 数据仅存本机 · 每篇论文独立文件夹 · 支持期刊等级（JCR / CSSCI 等）自动匹配',
+    btnChangelog: '更新日志', btnSettings: '期刊API设置', btnImport: '导入', btnExport: '导出', btnAdd: '新增项目',
+    statPapers: '论文数', statWorking: '工作中', statSubs: '投稿数', statActive: '在审中', statAccepted: '已接收',
+    statHitRate: '命中率', statAvgDur: '平均周期', statDecided: '已决', statDays: '天',
+    chartStatus: '投稿状态分布', chartLevel: '期刊等级分布', chartAccepted: '已接收成果期刊等级分布',
+    chartAcceptedNote: '（仅统计「已接收」状态）',
+    searchPlaceholder: '搜索项目名 / 论文标题 / 期刊 / 作者…',
+    allAuthors: '全部作者', allStatus: '全部状态', allDiscipline: '全部学科', allYear: '全部年度',
+    groupNone: '不分组', groupYear: '按年度分组', groupDiscipline: '按学科分组', groupAuthor: '按作者分组', groupStatus: '按状态分组',
+    sortUpdated: '按更新时间', sortSubmit: '按首次投稿', sortTitle: '按项目名',
+    backBtn: '返回全部论文', editPaper: '编辑项目信息',
+    paperStatusDist: '该论文投稿状态分布', paperHistory: '投稿历程',
+    subRecords: '投稿记录', btnNewSub: '转投 / 新投稿',
+    emptyNoProject: '还没有项目', emptyNoProjectSub: '点击右上角「新增项目」创建你的第一个项目',
+    emptyNoMatch: '没有匹配的项目', emptyNoSub: '还没有投稿记录', emptyNoSubSub: '点击「转投 / 新投稿」添加该论文的一次投稿',
+    emptyNoProgress: '暂无进展记录，点击「记录进展」添加。',
+    groupYearSuffix: ' 年', noAuthor: '（无作者）', unknownDisc: '未分类',
+    openFolder: '打开文件夹', delPaper: '删除', delSub: '删除',
+    edit: '编辑', editProject: '编辑项目',
+    workPanelTitle: '工作中 · 仅追踪截止日期',
+    workPanelDesc: '论文完成后，在「编辑项目信息」中将状态改为「完成」，即可在此文件夹内添加投稿记录。',
+    workNoDdl: '尚未设置截止日期，点击「编辑项目信息」添加。',
+    workOnlyTrack: '当前为「工作中」状态。完成后改为「完成」状态，即可添加投稿。',
+    noNotes: '暂无论文备注，点击「编辑项目信息」添加。',
+    ddlCreate: '创建', ddlFirst: '首次投稿', ddlUpdate: '更新', ddlDeadline: '截止',
+    noDdl: '未设截止日期', timesSub: ' 次投稿',
+    // 弹窗通用
+    cancel: '取消', save: '保存', create: '创建', close: '关闭', add: '添加',
+    // 新增项目
+    newProject: '新增项目', projName: '项目名', projNameOpt: '(文件夹名称，必填)',
+    lang: '语种', zhOpt: '中文', enOpt: '英文', bothOpt: '中英双语',
+    paperTitle: '论文标题', paperTitleOpt: '选填；工作中项目可暂不填', paperTitleEn: '论文标题（英文）',
+    authors: '作者', authorOpt: '拖拽卡片调整顺序即作者位次；可标记共一、通讯',
+    authorPlaceholder: '输入合作者姓名后回车或点「添加」', self: '本人',
+    authorHint: '姓名在列表中的先后即作者位次，可上下拖拽调整；用「共一 / 通讯」标记。曾输入的合作者会被记忆，下次可直接下拉选择。点「本人」自动加入你的名字（在「期刊API设置」里可改）。',
+    discField: '学科领域', discOpt: '可多选，输入中/英文检索，无匹配可新增',
+    discPlaceholder: '输入学科中/英文，如「城市」或「urban」',
+    projStatus: '项目状态', completed: '完成（可记录投稿）', working: '工作中（只设截止日期）',
+    nextDdl: '下一步截止日期', projNote: '项目备注', projNoteOpt: '可选', projNotePh: '研究主题、版本说明等',
+    noAuthorYet: '尚未添加作者，在下方输入后点「添加」，或点「本人」。可上下拖拽作者卡片调整顺序以改变位次。',
+    dupAuthor: '该作者已添加', existAuthor: '已存在同名作者', selfAdded: '本人已添加', inputSelfName: '请输入你的姓名（将记为「本人」）',
+    // 投稿
+    newSub: '转投 / 新投稿', journal: '期刊 / 会议名称', autoMatch: '自动匹配',
+    matchHint: '填期刊全称，点「自动匹配」通过 easyScholar 自动识别 JCR 分区（含 ESCI）及核心库（CSSCI / CSCD / EI / 北大核心 / Scopus 等），可多选，也可手动勾选或填写自定义。',
+    levels: '期刊等级（可多选；自动匹配将自动勾选）', levelCustom: '自定义期刊等级 / 分区（如未命中任何核心库时填写）',
+    impactFactor: '影响因子 IF', type: '类型', typeJournal: '期刊', typeConf: '会议', typePre: '预印本', typeUnspec: '未指定',
+    submitDate: '投稿日期', curStatus: '当前状态', round: '当前轮次', roundOpt: '外审/返修', nextDdl2: '下一步截止日期', subNote: '投稿备注', subNotePh: '投稿系统、进展说明等',
+    pleaseJournal: '请填写期刊 / 会议名称', addSub: '添加投稿', updatedSub: '已更新投稿',
+    // 进展
+    progress: '记录进展', progressFor: '记录进展', newStatus: '新状态', round2: '轮次', nextReply: '下一步截止 / 需回复日期',
+    reviewNote: '审稿意见 / 备注', reviewNotePh: '如：收到审稿意见，2位审稿人，要求补充实验…', addProgress: '添加进展',
+    editProgress: '编辑进展', saveEdit: '保存修改', updatedProgress: '进展已更新', delProgressConfirm: '确认删除这条进展记录？', delProgress: '已删除进展',
+    // 设置
+    apiSettings: '期刊分区 API 设置', secretKey: 'easyScholar 开放接口密钥 (Secret Key)', keyPlaceholder: '粘贴你的 secretKey',
+    keyHint: '用于自动匹配期刊分区 / 影响因子。密钥仅保存在你本机浏览器，不会上传。',
+    selfName: '本人姓名', selfNamePh: '如：张三', selfHint: '用于作者模块里的「本人」按钮；仅在新建/编辑项目时自动加入你的名字。仅存本机。',
+    getKeyHow: '如何获取免费密钥：',
+    matchNoName: '请先填写期刊名称', noKey: '未设置 API 密钥，请点右上角「期刊API设置」填入 easyScholar 免费密钥。',
+    matching: '匹配中…', matchFail: '匹配失败：', matchNotFound: '未找到该期刊的分区数据，请检查期刊全称。',
+    matchOk: '匹配成功：', matchNoLevel: '（未识别到等级，可手动勾选或填写自定义）', matchErr: '请求出错（检查网络或密钥）：', settingsSaved: '设置已保存',
+    // 更新日志
+    changelog: '更新日志', current: '当前',
+    // 导入导出
+    exportData: '导出数据', exportDesc: '选择导出格式，文件将下载到本地作为备份。JSON 含完整文件夹结构，可再导入。',
+    exportJSON: '导出 JSON（可再导入）', exportCSV: '导出 CSV（Excel打开）', exportedJSON: '已导出 JSON', exportedCSV: '已导出 CSV',
+    importConfirm: (n)=>`将导入 ${n} 篇论文并合并到现有数据，是否继续？`, importSuccess: '导入成功', importFail: '导入失败：',
+    // 删除确认
+    delPaperConfirm: (t,n)=>`确认删除论文「${t}」？该论文下所有投稿记录（${n} 条）将一并删除，不可撤销。`, delPaperOk: '已删除论文',
+    delSubConfirm: (t,j)=>`确认删除「${t}」在 ${j} 的这次投稿？`, delSubOk: '已删除投稿',
+    // 创建提示
+    createdCompleted: '已创建项目，可在文件夹内添加投稿记录', createdWorking: '已创建工作中文档', updatedProject: '已更新项目信息',
+    pleaseProjName: '请填写项目名',
+    // 图表空态
+    chartEmpty: '暂无数据', donutUnit: '次投稿',
+    chartJournalTop: '投稿期刊 TOP 5', chartJournalNote: '（投稿次数最多的5个期刊）',
+    sortCount: '按投稿次数', sortRate: '按命中率',
+    jLegendCount: '投稿次数', jLegendAccepted: '命中次数（已接收）',
+    jLabelCount: '投稿', jLabelHit: '命中', jEmpty: '暂无数据', jUnknownJournal: '未填期刊',
+  },
+  'zh-TW': {
+    appSub: '本地記錄 · 資料僅存本機 · 每篇論文獨立資料夾 · 支援期刊等級（JCR / CSSCI 等）自動匹配',
+    btnChangelog: '更新日誌', btnSettings: '期刊API設定', btnImport: '匯入', btnExport: '匯出', btnAdd: '新增專案',
+    statPapers: '論文數', statWorking: '工作中', statSubs: '投稿數', statActive: '審查中', statAccepted: '已接收',
+    statHitRate: '命中率', statAvgDur: '平均週期', statDecided: '已決', statDays: '天',
+    chartStatus: '投稿狀態分佈', chartLevel: '期刊等級分佈', chartAccepted: '已接收成果期刊等級分佈',
+    chartAcceptedNote: '（僅統計「已接收」狀態）',
+    searchPlaceholder: '搜尋專案名 / 論文標題 / 期刊 / 作者…',
+    allAuthors: '全部作者', allStatus: '全部狀態', allDiscipline: '全部學科', allYear: '全部年度',
+    groupNone: '不分组', groupYear: '按年度分組', groupDiscipline: '按學科分組', groupAuthor: '按作者分組', groupStatus: '按狀態分組',
+    sortUpdated: '按更新時間', sortSubmit: '按首次投稿', sortTitle: '按專案名',
+    backBtn: '返回全部論文', editPaper: '編輯專案資訊',
+    paperStatusDist: '該論文投稿狀態分佈', paperHistory: '投稿歷程',
+    subRecords: '投稿記錄', btnNewSub: '轉投 / 新投稿',
+    emptyNoProject: '還沒有專案', emptyNoProjectSub: '點擊右上角「新增專案」建立你的第一個專案',
+    emptyNoMatch: '沒有符合的專案', emptyNoSub: '還沒有投稿記錄', emptyNoSubSub: '點擊「轉投 / 新投稿」新增該論文的一次投稿',
+    emptyNoProgress: '暫無進展記錄，點擊「記錄進展」新增。',
+    groupYearSuffix: ' 年', noAuthor: '（無作者）', unknownDisc: '未分類',
+    openFolder: '打開資料夾', delPaper: '刪除', delSub: '刪除',
+    edit: '編輯', editProject: '編輯專案',
+    workPanelTitle: '工作中 · 僅追蹤截止日期',
+    workPanelDesc: '論文完成後，在「編輯專案資訊」中將狀態改為「完成」，即可在此資料夾內新增投稿記錄。',
+    workNoDdl: '尚未設定截止日期，點擊「編輯專案資訊」新增。',
+    workOnlyTrack: '目前為「工作中」狀態。完成後改為「完成」狀態，即可新增投稿。',
+    noNotes: '暫無論文備註，點擊「編輯專案資訊」新增。',
+    ddlCreate: '建立', ddlFirst: '首次投稿', ddlUpdate: '更新', ddlDeadline: '截止',
+    noDdl: '未設截止日期', timesSub: ' 次投稿',
+    cancel: '取消', save: '儲存', create: '建立', close: '關閉', add: '新增',
+    newProject: '新增專案', projName: '專案名', projNameOpt: '(資料夾名稱，必填)',
+    lang: '語種', zhOpt: '中文', enOpt: '英文', bothOpt: '中英雙語',
+    paperTitle: '論文標題', paperTitleOpt: '選填；工作中專案可暫不填', paperTitleEn: '論文標題（英文）',
+    authors: '作者', authorOpt: '拖曳卡片調整順序即作者位次；可標記共一、通訊',
+    authorPlaceholder: '輸入合作者姓名後按 Enter 或點「新增」', self: '本人',
+    authorHint: '姓名在清單中的先後即作者位次，可上下拖曳調整；用「共一 / 通訊」標記。曾輸入的合作者會被記憶，下次可直接下拉選擇。點「本人」自動加入你的名字（在「期刊API設定」裡可改）。',
+    discField: '學科領域', discOpt: '可多選，輸入中/英文檢索，無符合可新增',
+    discPlaceholder: '輸入學科中/英文，如「城市」或「urban」',
+    projStatus: '專案狀態', completed: '完成（可記錄投稿）', working: '工作中（只設截止日期）',
+    nextDdl: '下一步截止日期', projNote: '專案備註', projNoteOpt: '選填', projNotePh: '研究主題、版本說明等',
+    noAuthorYet: '尚未新增作者，在下方輸入後點「新增」，或點「本人」。可上下拖曳作者卡片調整順序以改變位次。',
+    dupAuthor: '該作者已新增', existAuthor: '已存在同名作者', selfAdded: '本人已新增', inputSelfName: '請輸入你的姓名（將記為「本人」）',
+    newSub: '轉投 / 新投稿', journal: '期刊 / 會議名稱', autoMatch: '自動匹配',
+    matchHint: '填期刊全稱，點「自動匹配」透過 easyScholar 自動識別 JCR 分區（含 ESCI）及核心庫（CSSCI / CSCD / EI / 北大核心 / Scopus 等），可多選，也可手動勾選或填寫自訂。',
+    levels: '期刊等級（可多選；自動匹配將自動勾選）', levelCustom: '自訂期刊等級 / 分區（如未命中任何核心庫時填寫）',
+    impactFactor: '影響因子 IF', type: '類型', typeJournal: '期刊', typeConf: '會議', typePre: '預印本', typeUnspec: '未指定',
+    submitDate: '投稿日期', curStatus: '目前狀態', round: '目前輪次', roundOpt: '外審/返修', nextDdl2: '下一步截止 / 需回覆日期', subNote: '投稿備註', subNotePh: '投稿系統、進展說明等',
+    pleaseJournal: '請填寫期刊 / 會議名稱', addSub: '新增投稿', updatedSub: '已更新投稿',
+    progress: '記錄進展', progressFor: '記錄進展', newStatus: '新狀態', round2: '輪次', nextReply: '下一步截止 / 需回覆日期',
+    reviewNote: '審稿意見 / 備註', reviewNotePh: '如：收到審稿意見，2位審稿人，要求補充實驗…', addProgress: '新增進展',
+    editProgress: '編輯進展', saveEdit: '儲存修改', updatedProgress: '進展已更新', delProgressConfirm: '確認刪除這條進展記錄？', delProgress: '已刪除進展',
+    apiSettings: '期刊分區 API 設定', secretKey: 'easyScholar 開放介面密鑰 (Secret Key)', keyPlaceholder: '貼上你的 secretKey',
+    keyHint: '用於自動匹配期刊分區 / 影響因子。密鑰僅儲存於你本機瀏覽器，不會上傳。',
+    selfName: '本人姓名', selfNamePh: '如：張三', selfHint: '用於作者模組裡的「本人」按鈕；僅在新增/編輯專案時自動加入你的名字。僅存本機。',
+    getKeyHow: '如何取得免費密鑰：',
+    matchNoName: '請先填寫期刊名稱', noKey: '未設定 API 密鑰，請點右上角「期刊API設定」填入 easyScholar 免費密鑰。',
+    matching: '匹配中…', matchFail: '匹配失敗：', matchNotFound: '未找到該期刊的分區資料，請檢查期刊全稱。',
+    matchOk: '匹配成功：', matchNoLevel: '（未識別到等級，可手動勾選或填寫自訂）', matchErr: '請求出錯（檢查網絡或密鑰）：', settingsSaved: '設定已儲存',
+    changelog: '更新日誌', current: '目前',
+    exportData: '匯出資料', exportDesc: '選擇匯出格式，檔案將下載到本地作為備份。JSON 含完整資料夾結構，可再匯入。',
+    exportJSON: '匯出 JSON（可再匯入）', exportCSV: '匯出 CSV（Excel開啟）', exportedJSON: '已匯出 JSON', exportedCSV: '已匯出 CSV',
+    importConfirm: (n)=>`將匯入 ${n} 篇論文並合併到現有資料，是否繼續？`, importSuccess: '匯入成功', importFail: '匯入失敗：',
+    delPaperConfirm: (t,n)=>`確認刪除論文「${t}」？該論文下所有投稿記錄（${n} 條）將一併刪除，不可復原。`, delPaperOk: '已刪除論文',
+    delSubConfirm: (t,j)=>`確認刪除「${t}」在 ${j} 的這次投稿？`, delSubOk: '已刪除投稿',
+    createdCompleted: '已建立專案，可在資料夾內新增投稿記錄', createdWorking: '已建立工作中文件', updatedProject: '已更新專案資訊',
+    pleaseProjName: '請填寫專案名',
+    chartEmpty: '暫無資料',     donutUnit: '次投稿',
+    chartJournalTop: '投稿期刊 TOP 5', chartJournalNote: '（投稿次數最多的5個期刊）',
+    sortCount: '按投稿次數', sortRate: '按命中率',
+    jLegendCount: '投稿次數', jLegendAccepted: '命中次數（已接收）',
+    jLabelCount: '投稿', jLabelHit: '命中', jEmpty: '暫無資料', jUnknownJournal: '未填期刊',
+  },
+};
+let currentLang = localStorage.getItem(I18N_KEY) || 'zh-CN';
+if(!I18N[currentLang]) currentLang = 'zh-CN';
+document.documentElement.lang = currentLang;
+// 翻译函数：t('key') 或 t('key', arg1, arg2, ...) ；缺失时回退简体
+function t(key, ...args){
+  const pack = I18N[currentLang] || I18N['zh-CN'];
+  let v = pack[key];
+  if(v===undefined) v = I18N['zh-CN'][key];
+  if(typeof v === 'function') return v(...args);
+  return v===undefined ? key : v;
+}
+function setLang(code){
+  if(!I18N[code]) return;
+  currentLang = code;
+  localStorage.setItem(I18N_KEY, code);
+  document.documentElement.lang = code;
+  // 重新渲染当前界面（视图不变）
+  if(VIEW.mode==='paper') renderPaper(); else renderGlobal();
+  applyStaticI18n();
+  renderFooter();
+}
+// 页脚随界面语言切换（简中 / 港繁）
+function renderFooter(){
+  $('#foot').innerHTML='科研工作台（多语言） v'+APP_VERSION+' · '+(currentLang==='zh-TW'?'資料儲存於本機瀏覽器（localStorage）':'数据保存在本机浏览器（localStorage）')+'<div class="dev-id">开发者：Starry、Tabitha</div>';
+}
+// 静态文案（写在 HTML 里的）随语言刷新
+function applyStaticI18n(){
+  const set=(sel,txt)=>{ const el=document.querySelector(sel); if(el) el.innerHTML=txt; };
+  set('#btnChangelog', '&#128220; '+t('btnChangelog'));
+  set('#btnSettings', '&#9881;&#65039; '+t('btnSettings'));
+  set('#btnImport', '&#128229; '+t('btnImport'));
+  set('#btnExport', '&#128228; '+t('btnExport'));
+  set('#btnAdd', '&#43; '+t('btnAdd'));
+  set('#btnBack', '&#8592; '+t('btnBack'));
+  set('#btnEditPaper', '&#9998; '+t('editPaper'));
+  set('#btnNewSub', '&#8617; '+t('btnNewSub'));
+  $('#search').placeholder = t('searchPlaceholder');
+  $('#filterAuthor').options[0].textContent = t('allAuthors');
+  $('#filterStatus').options[0].textContent = t('allStatus');
+  $('#filterDiscipline').options[0].textContent = t('allDiscipline');
+  $('#filterYear').options[0].textContent = t('allYear');
+  $('#groupBy').options[0].textContent = t('groupNone');
+  $('#groupBy').options[1].textContent = t('groupYear');
+  $('#groupBy').options[2].textContent = t('groupDiscipline');
+  $('#groupBy').options[3].textContent = t('groupAuthor');
+  $('#groupBy').options[4].textContent = t('groupStatus');
+  $('#sortBy').options[0].textContent = t('sortUpdated');
+  $('#sortBy').options[1].textContent = t('sortSubmit');
+  $('#sortBy').options[2].textContent = t('sortTitle');
+  // data-i18n 属性统一填充
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ const k=el.getAttribute('data-i18n'); if(k) el.textContent=t(k); });
+  // 顶部副标题
+  const sub=document.querySelector('.brand p'); if(sub) sub.textContent=t('appSub');
+  // 语言切换器选中态
+  const sel=document.querySelector('#langSwitch'); if(sel) sel.value=currentLang;
+}
+// 初始化语言切换器选项
+function initLangSwitch(){
+  const sel=document.querySelector('#langSwitch'); if(!sel) return;
+  sel.innerHTML = LANGS.map(l=>`<option value="${l.code}">${l.label}</option>`).join('');
+  sel.value = currentLang;
+}
+// 状态标签三语言映射（投稿状态 / 论文状态 / 文章状态）
+const STATUS_LABELS = {
+  'zh-CN':{
+    'prep':'准备中','submitted':'已投稿','review':'外审中','major':'大修返修','minor':'小修返修','accepted':'已接收','rejected':'已拒稿','withdrawn':'已撤稿',
+    'working':'工作中','active':'在审中','completed':'完成',
+  },
+  'zh-TW':{
+    'prep':'準備中','submitted':'已投稿','review':'外審中','major':'大修返修','minor':'小修返修','accepted':'已接收','rejected':'已拒稿','withdrawn':'已撤稿',
+    'working':'工作中','active':'審查中','completed':'完成',
+  },
+};
+// 返回当前语言下的状态标签
+function SL(key){ return (STATUS_LABELS[currentLang]||STATUS_LABELS['zh-CN'])[key] || key; }
+
+// 投稿状态
+const STATUS = {
+  prep:      {label:'准备中',   cls:'prep',      color:'var(--gray)',   round:false},
+  submitted: {label:'已投稿',   cls:'submitted', color:'var(--blue)',   round:false},
+  review:    {label:'外审中',   cls:'review',    color:'var(--purple)', round:true},
+  major:     {label:'大修返修', cls:'major',     color:'var(--orange)', round:true},
+  minor:     {label:'小修返修', cls:'minor',     color:'var(--teal)',   round:true},
+  accepted:  {label:'已接收',   cls:'accepted',  color:'var(--green)',  round:false},
+  rejected:  {label:'已拒稿',   cls:'rejected',  color:'var(--red)',    round:false},
+  withdrawn: {label:'已撤稿',   cls:'withdrawn', color:'#64748b',       round:false},
+};
+const STATUS_ORDER = ['prep','submitted','review','major','minor','accepted','rejected','withdrawn'];
+const ACTIVE_STATUS = ['submitted','review','major','minor'];
+const FINAL_STATUS = ['accepted','rejected','withdrawn'];
+// 投稿状态当前语言标签：SL(key) 或 STATUS[key].label
+function SLabel(key){ return SL(key); }
+
+// 论文整体状态（用于文件夹卡片）
+const PAPER_STATUS = {
+  prep:      {label:'准备中', cls:'prep',      color:'var(--gray)'},
+  working:   {label:'工作中', cls:'working',   color:'var(--amber)'},
+  active:    {label:'在审中', cls:'review',    color:'var(--purple)'},
+  accepted:  {label:'已接收', cls:'accepted',  color:'var(--green)'},
+  rejected:  {label:'已拒稿', cls:'rejected',  color:'var(--red)'},
+  withdrawn: {label:'已撤稿', cls:'withdrawn', color:'#64748b'},
+};
+// 论文「完成 / 工作中」顶层状态
+const ARTICLE_STATUS = { completed:{label:'完成',sub:'可记录投稿'}, working:{label:'工作中',sub:'只设截止日期'} };
+
+// 学科领域候选列表（按 JCR / Web of Science 标准学科分类，中英对照；可继续自定义补充）
+// 存储统一用「中文名」；展示为「中文（英文）」；检索同时匹配中英文
+const DISCIPLINE_LIST = [
+  {en:'ACCOUNTING', zh:'会计学'}, {en:'AGING', zh:'老年医学与衰老'}, {en:'AGRICULTURE, DAIRY & ANIMAL SCIENCE', zh:'农业、乳品与动物科学'}, {en:'AGRICULTURE, MULTIDISCIPLINARY', zh:'农业综合'}, {en:'AGRONOMY', zh:'农艺学'},
+  {en:'ALLERGY', zh:'过敏'}, {en:'ANATOMY & MORPHOLOGY', zh:'解剖学与形态学'}, {en:'ANDROLOGY', zh:'男科学'}, {en:'ANESTHESIOLOGY', zh:'麻醉学'}, {en:'ANTHROPOLOGY', zh:'人类学'}, {en:'APPLIED MATHEMATICS', zh:'应用数学'},
+  {en:'ASTRONOMY & ASTROPHYSICS', zh:'天文学与天体物理学'}, {en:'AUTOMATION & CONTROL SYSTEMS', zh:'自动化与控制系统'}, {en:'BEHAVIORAL SCIENCES', zh:'行为科学'}, {en:'BIOCHEMISTRY & MOLECULAR BIOLOGY', zh:'生物化学与分子生物学'},
+  {en:'BIODIVERSITY CONSERVATION', zh:'生物多样性保护'}, {en:'BIOLOGY', zh:'生物学'}, {en:'BIOPHYSICS', zh:'生物物理学'}, {en:'BIOTECHNOLOGY & APPLIED MICROBIOLOGY', zh:'生物技术与应用微生物学'}, {en:'BUSINESS', zh:'商业'},
+  {en:'BUSINESS, FINANCE', zh:'商业、金融'}, {en:'CARDIAC & CARDIOVASCULAR SYSTEMS', zh:'心脏与心血管系统'}, {en:'CELL & TISSUE ENGINEERING', zh:'细胞与组织工程'}, {en:'CELL BIOLOGY', zh:'细胞生物学'},
+  {en:'CHEMISTRY, ANALYTICAL', zh:'分析化学'}, {en:'CHEMISTRY, APPLIED', zh:'应用化学'}, {en:'CHEMISTRY, INORGANIC & NUCLEAR', zh:'无机化学与核化学'}, {en:'CHEMISTRY, MEDICINAL', zh:'药物化学'},
+  {en:'CHEMISTRY, MULTIDISCIPLINARY', zh:'化学综合'}, {en:'CHEMISTRY, ORGANIC', zh:'有机化学'}, {en:'CHEMISTRY, PHYSICAL', zh:'物理化学'}, {en:'COMMUNICATION', zh:'传播学'},
+  {en:'COMPUTER SCIENCE, ARTIFICIAL INTELLIGENCE', zh:'计算机科学、人工智能'}, {en:'COMPUTER SCIENCE, CYBERNETICS', zh:'计算机科学、控制论'}, {en:'COMPUTER SCIENCE, HARDWARE & ARCHITECTURE', zh:'计算机科学、硬件与体系结构'},
+  {en:'COMPUTER SCIENCE, INFORMATION SYSTEMS', zh:'计算机科学、信息系统'}, {en:'COMPUTER SCIENCE, INTERDISCIPLINARY APPLICATIONS', zh:'计算机科学、跨学科应用'}, {en:'COMPUTER SCIENCE, SOFTWARE ENGINEERING', zh:'计算机科学、软件工程'},
+  {en:'COMPUTER SCIENCE, THEORY & METHODS', zh:'计算机科学、理论与方法'}, {en:'CONSTRUCTION & BUILDING TECHNOLOGY', zh:'建筑与建造技术'}, {en:'CRITICAL CARE MEDICINE', zh:'重症监护医学'},
+  {en:'DENTISTRY, ORAL SURGERY & MEDICINE', zh:'牙科、口腔外科与医学'}, {en:'DERMATOLOGY', zh:'皮肤病学'}, {en:'DEVELOPMENTAL BIOLOGY', zh:'发育生物学'}, {en:'ECOLOGY', zh:'生态学'}, {en:'ECONOMICS', zh:'经济学'},
+  {en:'EDUCATION & EDUCATIONAL RESEARCH', zh:'教育与教育研究'}, {en:'EDUCATION, SPECIAL', zh:'特殊教育'}, {en:'EDUCATION, SCIENTIFIC DISCIPLINES', zh:'科学学科教育'}, {en:'EMBRYOLOGY', zh:'胚胎学'},
+  {en:'EMERGENCY MEDICINE', zh:'急诊医学'}, {en:'ENDOCRINOLOGY & METABOLISM', zh:'内分泌学与代谢'}, {en:'ENERGY & FUELS', zh:'能源与燃料'}, {en:'ENGINEERING, AEROSPACE', zh:'工程、航天'}, {en:'ENGINEERING, CHEMICAL', zh:'工程、化学'},
+  {en:'ENGINEERING, CIVIL', zh:'工程、土木'}, {en:'ENGINEERING, ELECTRICAL & ELECTRONIC', zh:'工程、电气与电子'}, {en:'ENGINEERING, ENVIRONMENTAL', zh:'工程、环境'}, {en:'ENGINEERING, INDUSTRIAL', zh:'工程、工业'},
+  {en:'ENGINEERING, MANUFACTURING', zh:'工程、制造'}, {en:'ENGINEERING, MECHANICAL', zh:'工程、机械'}, {en:'ENGINEERING, MULTIDISCIPLINARY', zh:'工程、综合'}, {en:'ENGINEERING, PETROLEUM', zh:'工程、石油'},
+  {en:'ENTOMOLOGY', zh:'昆虫学'}, {en:'ENVIRONMENTAL SCIENCES', zh:'环境科学'}, {en:'ENVIRONMENTAL STUDIES', zh:'环境研究'}, {en:'ETHICS', zh:'伦理学'}, {en:'EVOLUTIONARY BIOLOGY', zh:'进化生物学'}, {en:'FAMILY STUDIES', zh:'家庭研究'},
+  {en:'FISHERIES', zh:'渔业'}, {en:'FOOD SCIENCE & TECHNOLOGY', zh:'食品科技'}, {en:'FORESTRY', zh:'林学'}, {en:'GASTROENTEROLOGY & HEPATOLOGY', zh:'胃肠病学与肝病学'}, {en:'GENETICS & HEREDITY', zh:'遗传学与 Heredity'.replace('Heredity','')||'遗传学'},
+  {en:'GEOSCIENCES, MULTIDISCIPLINARY', zh:'地球科学、综合'}, {en:'GERIATRICS & GERONTOLOGY', zh:'老年医学与老年学'}, {en:'GEOGRAPHY', zh:'地理学'}, {en:'GEOGRAPHY, PHYSICAL', zh:'自然地理'},
+  {en:'GREEN & SUSTAINABLE SCIENCE & TECHNOLOGY', zh:'绿色与可持续科学与技术'}, {en:'HEALTH CARE SCIENCES & SERVICES', zh:'卫生保健科学与服务'}, {en:'HEALTH POLICY & SERVICES', zh:'卫生政策与服务'},
+  {en:'HEMATOLOGY', zh:'血液学'}, {en:'HISTORY', zh:'历史学'}, {en:'HISTORY & PHILOSOPHY OF SCIENCE', zh:'科学史与科学哲学'}, {en:'HORTICULTURE', zh:'园艺学'},
+  {en:'IMMUNOLOGY', zh:'免疫学'}, {en:'INFECTIOUS DISEASES', zh:'传染病'}, {en:'INFORMATION SCIENCE & LIBRARY SCIENCE', zh:'信息科学与图书馆科学'}, {en:'INSTRUMENTS & INSTRUMENTATION', zh:'仪器仪表'}, {en:'INTEGRATIVE & COMPLEMENTARY MEDICINE', zh:'整合与补充医学'},
+  {en:'INTERNATIONAL RELATIONS', zh:'国际关系'}, {en:'LAW', zh:'法学'}, {en:'LINGUISTICS', zh:'语言学'}, {en:'MANAGEMENT', zh:'管理学'}, {en:'MARINE & FRESHWATER BIOLOGY', zh:'海洋与淡水生物学'},
+  {en:'MATERIALS SCIENCE, BIOMATERIALS', zh:'材料科学、生物材料'}, {en:'MATERIALS SCIENCE, CERAMICS', zh:'材料科学、陶瓷'}, {en:'MATERIALS SCIENCE, CHARACTERIZATION & TESTING', zh:'材料科学、表征与测试'},
+  {en:'MATERIALS SCIENCE, COATINGS & FILMS', zh:'材料科学、涂层与薄膜'}, {en:'MATERIALS SCIENCE, COMPOSITES', zh:'材料科学、复合材料'}, {en:'MATERIALS SCIENCE, MULTIDISCIPLINARY', zh:'材料科学、综合'},
+  {en:'MATERIALS SCIENCE, PAPER & WOOD', zh:'材料科学、造纸与木材'}, {en:'MATERIALS SCIENCE, TEXTILES', zh:'材料科学、纺织'}, {en:'MATHEMATICS', zh:'数学'}, {en:'MATHEMATICS, APPLIED', zh:'应用数学'},
+  {en:'MATHEMATICS, INTERDISCIPLINARY APPLICATIONS', zh:'数学、跨学科应用'}, {en:'MECHANICS', zh:'力学'}, {en:'MEDICAL ETHICS', zh:'医学伦理学'}, {en:'MEDICAL INFORMATICS', zh:'医学信息学'},
+  {en:'MEDICAL LABORATORY TECHNOLOGY', zh:'医学实验室技术'}, {en:'MEDICINE, GENERAL & INTERNAL', zh:'医学、全科与内科'}, {en:'MEDICINE, RESEARCH & EXPERIMENTAL', zh:'医学、研究与实验'},
+  {en:'METABOLISM & DIGESTIVE SYSTEM', zh:'代谢与消化系统'}, {en:'MICROBIOLOGY', zh:'微生物学'}, {en:'MICROSCOPY', zh:'显微镜学'}, {en:'MINING & MINERAL PROCESSING', zh:'采矿与矿物加工'}, {en:'MULTIDISCIPLINARY SCIENCES', zh:'多学科科学'},
+  {en:'MYCOLOGY', zh:'真菌学'}, {en:'NANOSCIENCE & NANOTECHNOLOGY', zh:'纳米科学与纳米技术'}, {en:'NEONATOLOGY', zh:'新生儿学'}, {en:'NEPHROLOGY', zh:'肾脏学'}, {en:'NEUROIMAGING', zh:'神经影像学'}, {en:'NEUROSCIENCES', zh:'神经科学'},
+  {en:'NUCLEAR MEDICINE', zh:'核医学'}, {en:'NURSING', zh:'护理学'}, {en:'NUTRITION & DIETETICS', zh:'营养与饮食学'}, {en:'OBSTETRICS & GYNECOLOGY', zh:'妇产科学'}, {en:'ONCOLOGY', zh:'肿瘤学'}, {en:'OPHTHALMOLOGY', zh:'眼科学'},
+  {en:'ORTHOPEDICS', zh:'骨科学'}, {en:'OTORHINOLARYNGOLOGY', zh:'耳鼻喉科学'}, {en:'PARASITOLOGY', zh:'寄生虫学'}, {en:'PATHOLOGY', zh:'病理学'}, {en:'PEDIATRICS', zh:'儿科学'}, {en:'PERIPHERAL VASCULAR DISEASE', zh:'周围血管疾病'},
+  {en:'PHARMACOLOGY & PHARMACY', zh:'药理学与药学'}, {en:'PHILOSOPHY', zh:'哲学'}, {en:'PHYSICS, APPLIED', zh:'应用物理'}, {en:'PHYSICS, ATOMIC, MOLECULAR & CHEMICAL', zh:'原子、分子与化学物理'},
+  {en:'PHYSICS, CONDENSED MATTER', zh:'凝聚态物理'}, {en:'PHYSICS, FLUIDS & PLASMAS', zh:'流体与等离子体物理'}, {en:'PHYSICS, MATHEMATICAL', zh:'数学物理'}, {en:'PHYSICS, MULTIDISCIPLINARY', zh:'物理、综合'},
+  {en:'PHYSICS, NUCLEAR', zh:'核物理'}, {en:'PHYSICS, PARTICLES & FIELDS', zh:'粒子与场物理'}, {en:'PHYSIOLOGY', zh:'生理学'}, {en:'PLANT SCIENCES', zh:'植物科学'}, {en:'POLITICAL SCIENCE', zh:'政治学'}, {en:'PSYCHIATRY', zh:'精神病学'},
+  {en:'PSYCHOLOGY', zh:'心理学'}, {en:'PSYCHOLOGY, APPLIED', zh:'应用心理学'}, {en:'PSYCHOLOGY, BIOLOGICAL', zh:'生物心理学'}, {en:'PSYCHOLOGY, CLINICAL', zh:'临床心理学'}, {en:'PSYCHOLOGY, DEVELOPMENTAL', zh:'发展心理学'},
+  {en:'PSYCHOLOGY, EDUCATIONAL', zh:'教育心理学'}, {en:'PSYCHOLOGY, EXPERIMENTAL', zh:'实验心理学'}, {en:'PSYCHOLOGY, MATHEMATICAL', zh:'数学心理学'}, {en:'PSYCHOLOGY, MULTIDISCIPLINARY', zh:'心理学、综合'},
+  {en:'PSYCHOLOGY, PSYCHOANALYSIS', zh:'精神分析心理学'}, {en:'PSYCHOLOGY, SOCIAL', zh:'社会心理学'}, {en:'PUBLIC ADMINISTRATION', zh:'公共管理'}, {en:'PUBLIC, ENVIRONMENTAL & OCCUPATIONAL HEALTH', zh:'公共、环境与职业健康'},
+  {en:'RADIOLOGY, NUCLEAR MEDICINE & MEDICAL IMAGING', zh:'放射学、核医学与医学影像'}, {en:'REHABILITATION', zh:'康复医学'}, {en:'REMOTE SENSING', zh:'遥感'}, {en:'REPRODUCTIVE MEDICINE', zh:'生殖医学'},
+  {en:'RESPIRATORY SYSTEM', zh:'呼吸系统'}, {en:'RHEUMATOLOGY', zh:'风湿病学'}, {en:'ROBOTICS', zh:'机器人学'}, {en:'SOCIAL ISSUES', zh:'社会问题'}, {en:'SOCIAL SCIENCES, BIOMEDICAL', zh:'社会科学的生物医学'},
+  {en:'SOCIAL SCIENCES, INTERDISCIPLINARY', zh:'跨学科社会科学'}, {en:'SOCIAL WORK', zh:'社会工作'}, {en:'SOCIOLOGY', zh:'社会学'}, {en:'SOIL SCIENCE', zh:'土壤科学'}, {en:'SPORT SCIENCES', zh:'体育科学'},
+  {en:'STATISTICS & PROBABILITY', zh:'统计与概率'}, {en:'SUBSTANCE ABUSE', zh:'物质滥用'}, {en:'SURGERY', zh:'外科学'}, {en:'TELECOMMUNICATIONS', zh:'电信'}, {en:'THERMODYNAMICS', zh:'热力学'}, {en:'TOXICOLOGY', zh:'毒理学'},
+  {en:'TRANSPORTATION', zh:'交通运输'}, {en:'TRANSPLANTATION', zh:'移植'}, {en:'TROPICAL MEDICINE', zh:'热带医学'}, {en:'UROLOGY & NEPHROLOGY', zh:'泌尿学与肾脏学'}, {en:'VETERINARY SCIENCES', zh:'兽医学'},
+  {en:'VIROLOGY', zh:'病毒学'}, {en:'WATER RESOURCES', zh:'水资源'}, {en:'WOMEN’S STUDIES', zh:'女性研究'}, {en:'ZOOLOGY', zh:'动物学'},
+  {en:'URBAN STUDIES', zh:'城市研究'}, {en:'PLANNING & DEVELOPMENT', zh:'规划与发展'}, {en:'AREA STUDIES', zh:'区域研究'}, {en:'DEMOGRAPHY', zh:'人口学'},
+  {en:'DEVELOPMENT STUDIES', zh:'发展研究'}, {en:'HOSPITALITY, LEISURE, SPORT & TOURISM', zh:'酒店、休闲、体育与旅游'}
+];
+// 英文 -> 中文 / 中文 -> 英文 映射
+const DISC_EN2ZH = {}; const DISC_ZH2EN = {};
+DISCIPLINE_LIST.forEach(d=>{ DISC_EN2ZH[d.en]=d.zh; if(d.zh) DISC_ZH2EN[d.zh]=d.en; });
+// 兼容旧数据：英文 JCR 代码自动转成中文存储
+function discNorm(v){ return DISC_EN2ZH[v] || v; }
+// 展示标签：中文（英文）
+function discLabel(v){ const en=DISC_ZH2EN[v]; return en ? `${v}（${en}）` : v; }
+// 兼容保留：旧代码若仍引用 DISCIPLINE_SUGGESTIONS，给出中文列表
+const DISCIPLINE_SUGGESTIONS = DISCIPLINE_LIST.map(d=>d.zh);
+
+/* ===================== 数据层 ===================== */
+let DATA = [];                 // 数组：论文（文件夹）
+let VIEW = {mode:'global', paperId:null};
+
+function load(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(raw){ DATA = JSON.parse(raw).map(normalizePaper); return; }
+    const v1 = localStorage.getItem(V1_KEY);
+    if(v1){ DATA = JSON.parse(v1).map(migrateSub).map(normalizePaper); localStorage.setItem(STORE_KEY, JSON.stringify(DATA)); }
+    else DATA = [];
+  }catch(e){ DATA = []; }
+}
+// 规范化论文对象，保证字段齐全
+function normalizePaper(p){
+  p = p||{};
+  p.id = p.id||uid();
+  p.projectName = (p.projectName||'').trim() || p.title || '';   // 旧数据用论文标题作项目名
+  p.title = p.title||'';
+  p.titleEn = p.titleEn||'';
+  // 作者：兼容旧版字符串 authors -> 结构化 authorList[{name,self,cofirst,corresponding}]
+  if(Array.isArray(p.authorList)){ p.authorList = p.authorList.map(a=>{ a=a||{}; return {name:a.name||'', self:!!a.self, cofirst:!!a.cofirst, corresponding:!!a.corresponding}; }); }
+  else if(p.authors){ p.authorList = String(p.authors).split(',').map(s=>s.trim()).filter(Boolean).map(n=>({name:n, self:false, cofirst:false, corresponding:false})); }
+  else p.authorList = [];
+  p.authors = (p.authorList||[]).map(a=>a.name).join(',');   // 向后兼容旧显示
+  // 学科：兼容旧版单值 discipline -> 多值 disciplines
+    if(Array.isArray(p.disciplines)){ p.disciplines = p.disciplines.map(String).map(discNorm).filter(Boolean); }
+    else if(p.discipline){ p.disciplines = [String(p.discipline)].map(discNorm); }
+    else p.disciplines = [];
+  p.ddl = p.ddl||'';                                   // 工作中论文的截止日期
+  // 顶层状态：完成 / 工作中（旧数据按是否有投稿记录推断）
+  if(p.articleStatus!=='completed' && p.articleStatus!=='working'){
+    p.articleStatus = (p.submissions&&p.submissions.length)?'completed':'working';
+  }
+  p.notes = p.notes||'';
+  p.lang = (p.lang==='en'||p.lang==='both')?p.lang:'zh';
+  p.submissions = (p.submissions||[]).map(s=>{ s=s||{}; s.type=s.type||''; s.timeline=s.timeline||[]; if(!s.id) s.id=uid();
+    let arr = Array.isArray(s.levels) ? s.levels.slice() : (s.level ? [s.level] : (s.zone ? (inferLevel(s.zone)?[inferLevel(s.zone)]:[]) : []));
+    arr = arr.filter(Boolean);
+    s.levels = arr;
+    if(s.zone===undefined) s.zone=''; return s; });
+  return p;
+}
+function save(){ localStorage.setItem(STORE_KEY, JSON.stringify(DATA)); }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function getKey(){ return localStorage.getItem(KEY_KEY)||''; }
+function setKey(k){ localStorage.setItem(KEY_KEY, k||''); }
+
+// 旧版（单条投稿）记录 -> 论文文件夹
+function migrateSub(s){
+  const sub = {
+    id: s.id||uid(), journal:s.journal||'', type:s.type||'', zone:s.zone||'', impactFactor:s.impactFactor||'',
+    submitDate:s.submitDate||'', status:s.status||'submitted', round:s.round||'', deadline:s.deadline||'', note:s.note||'',
+    timeline:s.timeline||[]
+  };
+  return {
+    id: uid(), title:s.title||'未命名论文', titleEn:'', lang:'zh', authors:s.coauthors||'', notes:'',
+    createdAt:s.createdAt||s.updatedAt||Date.now(), updatedAt:s.updatedAt||Date.now(),
+    submissions:[sub]
+  };
+}
+
+/* ===================== 工具 ===================== */
+const $ = s=>document.querySelector(s);
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2200); }
+function fmtDate(s){ if(!s) return '—'; const d=new Date(s); if(isNaN(d)) return s; return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function daysBetween(a,b){ return Math.round((new Date(b)-new Date(a))/86400000); }
+function daysFromToday(s){ if(!s) return null; const t=new Date(); t.setHours(0,0,0,0); return daysBetween(t, s); }
+function empty(title,sub){ return `<div class="empty"><div class="ic">&#128220;</div><h3>${title}</h3>${sub?`<p>${sub}</p>`:''}</div>`; }
+
+/* 项目名（文件夹名）与论文标题（双语）分离 */
+function projNameText(p){ return (p.projectName||'').trim() || p.title || p.titleEn || '未命名项目'; }
+function paperBilingualText(p){
+  if(p.titleEn) return (p.title||'')+' / '+(p.titleEn||'');
+  return p.title||'';
+}
+function paperTitleText(p){ return projNameText(p); }
+function paperTitleHTML(p){ return esc(projNameText(p)); }
+function paperLangBadge(p){
+  const m={zh:t('zhOpt'),en:'EN',both:t('bothOpt')};
+  return `<span class="lang-badge">${m[p.lang]||t('zhOpt')}</span>`;
+}
+function showLangBadge(p){ return (p.title||p.titleEn) ? paperLangBadge(p) : ''; }
+// 语种切换时，先按「切换前语种」把已填标题暂存，再按「切换后语种」搬运，避免错归或丢失
+let TL_BUF={zh:'',en:''};        // 新增表单标题缓冲（按语种暂存）
+let TL_BUF_E={zh:'',en:''};      // 编辑表单标题缓冲
+let F_LANG='zh', E_LANG='zh';    // 当前表单所选语种，用于判断切换方向
+function applyLangSwitch(tId, teId, buf, wrapId, wrapEnId, newLang, prevLang){
+  const wt=$('#'+wrapId), we=$('#'+wrapEnId); if(!wt) return;
+  const tIn=$('#'+tId), eIn=$('#'+teId); if(!tIn) return;
+  // 1) 先将当前输入框内容按「切换前语种」存回对应缓冲
+  if(prevLang==='both'){ buf.zh=tIn.value; buf.en=eIn.value; }
+  else if(prevLang==='en'){ buf.en=tIn.value; }
+  else { buf.zh=tIn.value; }
+  // 2) 再按「切换后语种」把对应缓冲搬到输入框
+  if(newLang==='both'){
+    wt.style.display=''; we.style.display=''; wt.querySelector('label').textContent=t('paperTitle')+'（'+t('zhOpt')+'）';
+    tIn.value=buf.zh; if(eIn) eIn.value=buf.en;
+  } else if(newLang==='en'){
+    wt.style.display=''; we.style.display='none'; wt.querySelector('label').textContent=t('paperTitleEn');
+    tIn.value=buf.en;
+  } else {
+    wt.style.display=''; we.style.display='none'; wt.querySelector('label').textContent=t('paperTitle');
+    tIn.value=buf.zh;
+  }
+}
+function toggleLang(v){ applyLangSwitch('f-title','f-titleEn',TL_BUF,'wrapTitle','wrapTitleEn',v,F_LANG); F_LANG=v; }
+
+/* 当前状态：top-level 字段为权威，timeline 为历史记录 */
+function currentEvent(sub){
+  return {status:sub.status||'prep', round:sub.round||'', date:sub.submitDate||''};
+}
+/* 最终决定日期：取 timeline 最后一条的日期 */
+function decisionDate(sub){
+  const tl=(sub.timeline||[]).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||'')||(a.ts||0)-(b.ts||0));
+  const last=tl[tl.length-1];
+  return (last&&last.date)||sub.submitDate||'';
+}
+/* 论文代表性状态 */
+function paperCurrent(p){
+  if(p.articleStatus==='working') return {status:'working'};
+  const subs=(p.submissions||[]).map(currentEvent);
+  if(!subs.length) return {status:'prep'};
+  if(subs.some(c=>c.status==='accepted')) return {status:'accepted'};
+  if(subs.some(c=>ACTIVE_STATUS.includes(c.status))) return {status:'active'};
+  const all=subs.map(c=>c.status);
+  if(all.every(s=>s==='rejected')) return {status:'rejected'};
+  if(all.every(s=>s==='withdrawn')) return {status:'withdrawn'};
+  if(all.every(s=>s==='prep')) return {status:'prep'};
+  return {status:'rejected'};
+}
+function firstSubmit(p){ const ds=(p.submissions||[]).map(s=>s.submitDate).filter(Boolean).sort(); return ds[0]||''; }
+function paperYear(p){ const fs=firstSubmit(p); if(fs) return new Date(fs).getFullYear(); return new Date(p.createdAt||Date.now()).getFullYear(); }
+// 学科领域：文本框输入匹配（中英双语）+ 可新增（类似报名链接下拉）
+let TMP_DISC=[];
+// 候选列表：JCR 学科 + 已选的自定义项
+function discCandidates(){
+  const list = DISCIPLINE_LIST.map(d=>({zh:d.zh, en:d.en, label: d.zh ? `${d.zh}（${d.en}）` : d.en}));
+  TMP_DISC.forEach(zh=>{ if(!DISC_ZH2EN[zh] && !list.some(x=>x.zh===zh)) list.push({zh, en:'', label:zh}); });
+  return list;
+}
+// 已选学科标签（可移除）
+function renderDiscSel(){
+  const box=$('#discSel'); if(!box) return;
+  box.innerHTML = TMP_DISC.map(zh=>`<span class="disc-sel">${esc(discLabel(zh))}<button type="button" class="x" onclick="discRemove('${esc(zh)}')" title="移除">×</button></span>`).join('');
+}
+// 输入时实时过滤下拉
+function discFilter(){
+  const inp=$('#discInput'), menu=$('#discMenu'); if(!inp||!menu) return;
+  const q=inp.value.trim().toLowerCase();
+  menu.style.display='block';
+  let cands = discCandidates();
+  if(q) cands = cands.filter(c=> (c.en&&c.en.toLowerCase().includes(q)) || (c.zh&&c.zh.toLowerCase().includes(q)) );
+  // 已选的排前面，便于取消
+  cands.sort((a,b)=> (TMP_DISC.includes(b.zh)?1:0)-(TMP_DISC.includes(a.zh)?1:0));
+  const exact = cands.some(c=> c.zh.toLowerCase()===q || c.en.toLowerCase()===q);
+  let html = cands.map(c=>{
+    const on=TMP_DISC.includes(c.zh);
+    return `<div class="combo-item ${on?'on':''}" data-zh="${esc(c.zh)}" onclick="discPickEl(this)">${esc(c.label)}${on?' <span class="tick">✓</span>':''}</div>`;
+  }).join('');
+  if(q && !exact) html += `<div class="combo-add" onclick="discAddNew()">＋ 新增「${esc(inp.value.trim())}」</div>`;
+  if(!html) html = `<div class="combo-empty">无匹配，可点击上方「新增」</div>`;
+  menu.innerHTML = html;
+}
+function discPickEl(el){ discPick(el.dataset.zh); }
+function discPick(zh){
+  if(TMP_DISC.includes(zh)) TMP_DISC=TMP_DISC.filter(x=>x!==zh);
+  else TMP_DISC.push(zh);
+  const inp=$('#discInput'); if(inp) inp.value='';   // 选中后清空搜索框，避免残留搜索词
+  renderDiscSel(); discFilter();
+  if(inp) inp.focus();
+}
+// 回车：精确匹配则选中，否则新增
+function discEnter(){
+  const inp=$('#discInput'); const q=inp.value.trim(); if(!q) return;
+  const c=discCandidates().find(x=> x.zh.toLowerCase()===q.toLowerCase() || (x.en&&x.en.toLowerCase()===q.toLowerCase()));
+  if(c){ if(!TMP_DISC.includes(c.zh)) TMP_DISC.push(c.zh); }
+  else { if(!TMP_DISC.includes(q)) TMP_DISC.push(q); }
+  inp.value=''; renderDiscSel(); discFilter();
+}
+function discAddNew(){
+  const inp=$('#discInput'); const v=inp.value.trim(); if(!v) return;
+  if(!TMP_DISC.includes(v)) TMP_DISC.push(v);
+  inp.value=''; renderDiscSel(); discFilter();
+}
+function discRemove(zh){ TMP_DISC=TMP_DISC.filter(x=>x!==zh); renderDiscSel(); discFilter(); }
+// 点击下拉之外区域关闭菜单
+document.addEventListener('click', function(e){
+  const c=document.getElementById('discCombo');
+  if(c && !c.contains(e.target)){ const m=document.getElementById('discMenu'); if(m) m.style.display='none'; }
+});
+// 所有出现过的学科（用于筛选下拉）
+function allDisciplines(){
+  const set=[];
+  DISCIPLINE_LIST.forEach(d=>{ if(!set.includes(d.zh)) set.push(d.zh); });
+  DATA.forEach(p=>{ (p.disciplines||[]).forEach(d=>{ if(!set.includes(d)) set.push(d); }); });
+  return set;
+}
+function earliestDeadline(p){
+  let best=null;
+  (p.submissions||[]).forEach(s=>{ if(!s.deadline||FINAL_STATUS.includes(currentEvent(s).status)) return; if(!best||s.deadline<best) best=s.deadline; });
+  return best;
+}
+
+/* ===================== 作者模块 ===================== */
+// 本人姓名
+function getSelfName(){ return localStorage.getItem(SELF_KEY)||''; }
+function setSelfName(n){ localStorage.setItem(SELF_KEY, n||''); }
+// 记忆的合作者（输入过的姓名会被保存为选项）
+function rememberedAuthors(){ try{ return JSON.parse(localStorage.getItem(AUTHORS_MEM_KEY)||'[]'); }catch(e){ return []; } }
+function rememberAuthor(name){ name=(name||'').trim(); if(!name) return; const a=rememberedAuthors(); if(!a.includes(name)){ a.push(name); localStorage.setItem(AUTHORS_MEM_KEY, JSON.stringify(a)); } }
+// 临时编辑列表（弹窗内使用）
+let TMP_AUTHORS=[];
+let DRAG_AUTHOR_IDX=null;
+function authorList(p){ return (p&&p.authorList)||[]; }
+// 根据列表顺序计算每位作者的位次标签（支持共同第一作者）
+function authorLabels(list){
+  const cofirst=list.filter(a=>a.cofirst);
+  const hasCofirst=cofirst.length>0;
+  let nonCo=0;
+  return list.map(a=>{
+    if(a.cofirst){ return `共一第${cofirst.indexOf(a)+1}作者`; }
+    nonCo++;
+    return `第${(hasCofirst?1:0)+nonCo}作者`;
+  });
+}
+function authorNames(p){ return authorList(p).map(a=>a.name).join('、'); }
+// 文件夹头部 / 详情展示用（含共一 / 通讯 标签）
+function authorChipsHTML(p){
+  const list=authorList(p); if(!list.length) return '';
+  const labels=authorLabels(list);
+  return '<div class="author-chips-inline">'+list.map((a,i)=>{
+    const tags=[];
+    if(a.cofirst) tags.push(`<span class="badge" style="background:#fef3c7;color:#92400e">共一</span>`);
+    if(a.corresponding) tags.push(`<span class="badge" style="background:#dbeafe;color:#1e40af">通讯</span>`);
+    return `<span class="author-chip"><b>${esc(a.name)}</b> <span class="a-role">${labels[i]}</span> ${tags.join('')}</span>`;
+  }).join('')+'</div>';
+}
+// 导出用：姓名(标签,位次)
+function authorsExport(p){
+  const list=authorList(p); if(!list.length) return '';
+  const labels=authorLabels(list);
+  return list.map((a,i)=>{ const tags=[]; if(a.cofirst)tags.push('共一'); if(a.corresponding)tags.push('通讯');
+    return a.name+(tags.length?`(${tags.join('/')},${labels[i]})`:`(${labels[i]})`); }).join('；');
+}
+// 卡片内紧凑展示（每位作者的姓名后紧跟其共一 / 通讯 标记）
+function authorLineHTML(p){
+  const list=authorList(p); if(!list.length) return '';
+  const labels=authorLabels(list);
+  const parts=list.map((a,i)=>{
+    const tags=[];
+    if(a.cofirst) tags.push(`<span class="badge" style="background:#fef3c7;color:#92400e">共一</span>`);
+    if(a.corresponding) tags.push(`<span class="badge" style="background:#dbeafe;color:#1e40af">通讯</span>`);
+    return `<b>${esc(a.name)}</b>${tags.length?' '+tags.join(''):''}`;
+  });
+  return `<span>&#128101; ${parts.join('、')}</span>`;
+}
+// 表单内渲染作者 chips（支持拖拽改顺序）
+function renderAuthorChips(){
+  const box=$('#authorBox'); if(!box) return;
+  if(!TMP_AUTHORS.length){ box.innerHTML='<div style="color:var(--sub);font-size:12.5px;padding:4px 0">'+t('noAuthorYet')+'</div>'; return; }
+  const labels=authorLabels(TMP_AUTHORS);
+  box.innerHTML=TMP_AUTHORS.map((a,i)=>`
+    <div class="author-chip edit" draggable="true" data-i="${i}"
+      ondragstart="DRAG_AUTHOR_IDX=${i}"
+      ondragover="event.preventDefault(); if(DRAG_AUTHOR_IDX!==${i}) this.classList.add('drag-over')"
+      ondragleave="this.classList.remove('drag-over')"
+      ondrop="event.preventDefault(); this.classList.remove('drag-over'); dropAuthor(${i})"
+      ondragend="DRAG_AUTHOR_IDX=null; document.querySelectorAll('.author-chip.edit.drag-over').forEach(e=>e.classList.remove('drag-over'))">
+      <span class="drag-grip" title="拖拽调整位次">&#8942;&#8942;</span>
+      <span class="a-name" title="点击编辑姓名" onclick="editAuthorName(${i})"><b>${esc(a.name)}</b> <span class="a-role">${labels[i]}</span> <span class="a-edit-pen" title="编辑">&#9998;</span></span>
+      <span class="a-flags">
+        <button type="button" class="a-flag ${a.cofirst?'on':''}" onclick="toggleAuthorFlag(${i},'cofirst')">共一</button>
+        <button type="button" class="a-flag ${a.corresponding?'on':''}" onclick="toggleAuthorFlag(${i},'corresponding')">通讯</button>
+        <button type="button" class="a-del" onclick="removeAuthor(${i})" title="删除">×</button>
+      </span>
+    </div>`).join('');
+}
+function dropAuthor(target){
+  if(DRAG_AUTHOR_IDX===null||DRAG_AUTHOR_IDX===target) return;
+  const [m]=TMP_AUTHORS.splice(DRAG_AUTHOR_IDX,1);
+  TMP_AUTHORS.splice(target,0,m);
+  DRAG_AUTHOR_IDX=null; renderAuthorChips();
+}
+function toggleAuthorFlag(i,flag){
+  if(!TMP_AUTHORS[i]) return;
+  if(flag==='self'){
+    if(TMP_AUTHORS[i].self){ TMP_AUTHORS[i].self=false; }
+    else { TMP_AUTHORS.forEach(a=>a.self=false); TMP_AUTHORS[i].self=true; }
+  } else { TMP_AUTHORS[i][flag]=!TMP_AUTHORS[i][flag]; }
+  renderAuthorChips();
+}
+function removeAuthor(i){ TMP_AUTHORS.splice(i,1); renderAuthorChips(); }
+// 行内编辑作者姓名
+let AE_CANCEL=false;
+function editAuthorName(i){
+  const chip=document.querySelector('.author-chip.edit[data-i="'+i+'"]'); if(!chip) return;
+  const nm=chip.querySelector('.a-name'); if(!nm) return;
+  const cur=TMP_AUTHORS[i].name;
+  AE_CANCEL=false;
+  nm.innerHTML=`<span class="ae-edit"><input class="author-edit-input" value="${esc(cur)}" onkeydown="if(event.key==='Enter'){this.blur();}else if(event.key==='Escape'){AE_CANCEL=true;renderAuthorChips();}" onblur="if(!AE_CANCEL)commitAuthorName(${i},this.value)"><button class="ae-btn" type="button" title="保存" onclick="this.closest('.ae-edit').querySelector('input').blur()">✓</button><button class="ae-btn ae-x" type="button" title="取消" onclick="AE_CANCEL=true;renderAuthorChips()">✕</button></span>`;
+  const inp=nm.querySelector('input'); if(inp){ inp.focus(); inp.select(); }
+}
+function commitAuthorName(i,val){
+  val=(val||'').trim();
+  if(!val){ renderAuthorChips(); return; }
+  if(TMP_AUTHORS.some((a,idx)=>idx!==i && a.name===val)){ toast(t('existAuthor')); renderAuthorChips(); return; }
+  TMP_AUTHORS[i].name=val; rememberAuthor(val); renderAuthorChips();
+}
+function addAuthor(){
+  const inp=$('#authorInput'); if(!inp) return;
+  const v=inp.value.trim(); if(!v) return;
+  if(TMP_AUTHORS.some(a=>a.name===v)){ toast(t('dupAuthor')); inp.value=''; return; }
+  TMP_AUTHORS.push({name:v, self:false, cofirst:false, corresponding:false});
+  rememberAuthor(v); inp.value=''; renderAuthorChips();
+}
+function addSelfAuthor(){
+  let name=getSelfName();
+  if(!name){ name=prompt(t('inputSelfName')); if(!name) return; name=name.trim(); if(!name) return; setSelfName(name); }
+  if(TMP_AUTHORS.some(a=>a.self)){ toast(t('selfAdded')); return; }
+  if(TMP_AUTHORS.some(a=>a.name===name)){ const idx=TMP_AUTHORS.findIndex(a=>a.name===name); TMP_AUTHORS[idx].self=true; renderAuthorChips(); return; }
+  TMP_AUTHORS.unshift({name, self:true, cofirst:false, corresponding:false});
+  rememberAuthor(name); renderAuthorChips();
+}
+function fillAuthorMem(){ const dl=$('#authorMem'); if(dl) dl.innerHTML=rememberedAuthors().map(n=>`<option value="${esc(n)}">`).join(''); }
+
+/* ===================== 统计 ===================== */
+function allSubs(){ return DATA.flatMap(p=>p.submissions||[]); }
+
+function renderStatsGlobal(){
+  const subs=allSubs();
+  const total=subs.length;
+  const active=subs.filter(s=>ACTIVE_STATUS.includes(currentEvent(s).status)).length;
+  const accepted=subs.filter(s=>currentEvent(s).status==='accepted').length;
+  const rejected=subs.filter(s=>currentEvent(s).status==='rejected').length;
+  const decided=accepted+rejected;
+  const hitRate=decided?Math.round(accepted/decided*100):0;
+  let durs=[];
+  subs.forEach(s=>{ const c=currentEvent(s); if(FINAL_STATUS.includes(c.status)&&s.submitDate){ const dd=decisionDate(s); if(dd){ const d=daysBetween(s.submitDate,dd); if(d>=0) durs.push(d);} } });
+  const avgDur=durs.length?Math.round(durs.reduce((a,b)=>a+b,0)/durs.length):0;
+
+  const cards=[
+    {k:t('statPapers'), v:DATA.length, dot:'var(--brand)'},
+    {k:t('statWorking'), v:DATA.filter(p=>p.articleStatus==='working').length, dot:'var(--amber)'},
+    {k:t('statSubs'), v:total, dot:'var(--blue)'},
+    {k:t('statActive'), v:active, dot:'var(--purple)'},
+    {k:t('statAccepted'), v:accepted, dot:'var(--green)'},
+    {k:t('statHitRate'), v:hitRate, unit:'%', sub:`${accepted}/${decided||0} ${t('statDecided')}`, dot:'var(--amber)'},
+    {k:t('statAvgDur'), v:avgDur||'—', unit:avgDur?t('statDays'):'', dot:'var(--teal)'},
+  ];
+  $('#statGrid').innerHTML=cards.map(c=>`
+    <div class="stat">
+      <div class="k"><span class="dot" style="background:${c.dot}"></span>${c.k}</div>
+      <div class="v">${c.v}${c.unit?`<small>${c.unit}</small>`:''}${c.sub?`<small>${c.sub}</small>`:''}</div>
+    </div>`).join('');
+
+  renderDonut(subs,'#donut'); renderBars(subs,'#bars');
+  const acceptedSubs = subs.filter(s=>currentEvent(s).status==='accepted');
+  renderBars(acceptedSubs,'#barsAccepted');
+  renderJournalStats();
+}
+
+/* 投稿期刊 TOP 5 统计（柱状图：投稿次数 + 命中次数） */
+let journalStatsSort = 'count';   // 'count' | 'rate'
+function renderJournalStats(){
+  const subs = allSubs();
+  const stats = {};   // journal -> {count, accepted, levelRank, impact}
+  subs.forEach(s=>{
+    const j = (s.journal||'').trim() || t('jUnknownJournal');
+    if(!stats[j]) stats[j] = {count:0, accepted:0, levelRank:0, impact:0};
+    const st = stats[j];
+    st.count++;
+    if(currentEvent(s).status === 'accepted') st.accepted++;
+    // 分区优先级：取该期刊全部投稿中的最高等级 rank（保留最大值）
+    const r = LEVEL_RANK[bestLevelKey(s)] || 0;
+    if(r > st.levelRank) st.levelRank = r;
+    // 影响因子：取该期刊全部投稿中的最高 IF
+    const f = parseFloat(s.impactFactor);
+    if(!isNaN(f) && f > st.impact) st.impact = f;
+  });
+  let arr = Object.keys(stats).map(j=>({
+    journal:j, count:stats[j].count, accepted:stats[j].accepted,
+    rate: stats[j].count ? Math.round(stats[j].accepted/stats[j].count*100) : 0,
+    levelRank: stats[j].levelRank, impact: stats[j].impact
+  }));
+  // 排序：投稿次数相同 -> 先按分区优先级(高者前)，再按影响因子(高者前)
+  if(journalStatsSort === 'rate'){
+    arr.sort((a,b)=> b.rate - a.rate || b.count - a.count || b.levelRank - a.levelRank || b.impact - a.impact);
+  } else {
+    arr.sort((a,b)=> b.count - a.count || b.levelRank - a.levelRank || b.impact - a.impact);
+  }
+  const top5 = arr.slice(0, 5);
+  const box = $('#journalStats');
+  if(!top5.length){ box.innerHTML='<div class="empty" style="padding:30px"><div class="ic">&#128202;</div><div>'+t('jEmpty')+'</div></div>'; return; }
+  const maxCount = Math.max(...top5.map(x=>x.count));
+  box.innerHTML =
+    '<div class="legend" style="margin-bottom:9px"><span><span class="dot" style="background:var(--blue)"></span>'+t('jLegendCount')+'</span><span><span class="dot" style="background:var(--green)"></span>'+t('jLegendAccepted')+'</span></div>'
+    + top5.map(x=>{
+      const wCount = Math.round(x.count / maxCount * 100);
+      const wAccepted = Math.round(x.accepted / maxCount * 100);
+      return `<div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:72%">${esc(x.journal)}</span>
+          <span style="font-size:11px;color:var(--sub);flex-shrink:0">${t('statHitRate')} <b style="color:${x.rate>=50?'var(--green)':'var(--amber)'}">${x.rate}%</b></span>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;margin-bottom:3px">
+          <div style="width:38px;font-size:11px;color:var(--sub);text-align:right;flex-shrink:0">${t('jLabelCount')}</div>
+          <div style="flex:1;background:#f1f5f9;border-radius:6px;overflow:hidden;height:16px">
+            <div style="width:${wCount}%;height:100%;background:var(--blue);border-radius:6px;transition:width .4s"></div>
+          </div>
+          <div style="width:22px;font-weight:650;font-size:12px;text-align:center">${x.count}</div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <div style="width:38px;font-size:11px;color:var(--sub);text-align:right;flex-shrink:0">${t('jLabelHit')}</div>
+          <div style="flex:1;background:#f1f5f9;border-radius:6px;overflow:hidden;height:16px">
+            <div style="width:${wAccepted}%;height:100%;background:var(--green);border-radius:6px;transition:width .4s"></div>
+          </div>
+          <div style="width:22px;font-weight:650;font-size:12px;text-align:center">${x.accepted}</div>
+        </div>
+      </div>`;
+    }).join('');
+}
+
+/* 环形图：状态分布（原生SVG，离线可用） */
+function renderDonut(subs, sel){
+  const counts={}; STATUS_ORDER.forEach(k=>counts[k]=0);
+  subs.forEach(s=>{ counts[currentEvent(s).status]++; });
+  const items=STATUS_ORDER.filter(k=>counts[k]>0).map(k=>({k,label:SL(k),color:STATUS[k].color,val:counts[k]}));
+  const total=items.reduce((a,b)=>a+b.val,0);
+  const box=$(sel);
+  if(!total){ box.innerHTML='<div class="empty" style="padding:30px"><div class="ic">&#128203;</div><div>'+t('chartEmpty')+'</div></div>'; return; }
+  const cx=90,cy=90,r=68,sw=26; let ang=-Math.PI/2; const C=2*Math.PI*r;
+  let segs='';
+  items.forEach(it=>{
+    const frac=it.val/total; const len=frac*C;
+    segs+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${it.color}" stroke-width="${sw}"
+      stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-(ang+Math.PI/2)/(2*Math.PI)*C}" transform="rotate(-90 ${cx} ${cy})"><title>${it.label}: ${it.val}</title></circle>`;
+    ang+=frac*2*Math.PI;
+  });
+  box.innerHTML=`<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+    <svg width="180" height="180" viewBox="0 0 180 180" style="flex-shrink:0">
+      ${segs}
+      <text x="90" y="84" text-anchor="middle" font-size="30" font-weight="700" fill="var(--ink)">${total}</text>
+      <text x="90" y="106" text-anchor="middle" font-size="12" fill="var(--sub)">${t('donutUnit')}</text>
+    </svg>
+    <div class="legend" style="flex-direction:column;gap:7px">
+      ${items.map(it=>`<span><span class="dot" style="background:${it.color}"></span>${it.label} <b style="color:var(--ink);margin-left:2px">${it.val}</b></span>`).join('')}
+    </div></div>`;
+}
+
+/* 柱状图：期刊等级分布 */
+function renderBars(subs, sel){
+  const counts={};
+  subs.forEach(s=>{ const z=subZoneLabel(s)||t('unknownDisc'); counts[z]=(counts[z]||0)+1; });
+  // 排序：按 JLEVELS 标准顺序，其余（含自定义）其次，未分类最后
+  const ord=k=>{ const i=JLEVELS.findIndex(l=>l.label===k); if(i>=0) return i; if(k===t('unknownDisc')) return 999; return 500; };
+  const keys=Object.keys(counts).sort((a,b)=> ord(a)-ord(b) || counts[b]-counts[a]);
+  const box=$(sel);
+  if(!keys.length){ box.innerHTML='<div class="empty" style="padding:30px"><div class="ic">&#127942;</div><div>'+t('chartEmpty')+'</div></div>'; return; }
+  const max=Math.max(...keys.map(k=>counts[k]));
+  box.innerHTML=keys.map(k=>{ const w=Math.round(counts[k]/max*100); const col=(JLEVELS.find(l=>l.label===k)||{}).color||'#94a3b8';
+    return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:9px">
+      <div style="width:78px;font-size:12.5px;color:var(--sub);text-align:right;flex-shrink:0">${esc(k)}</div>
+      <div style="flex:1;background:#f1f5f9;border-radius:6px;overflow:hidden;height:22px">
+        <div style="width:${w}%;height:100%;background:${col};border-radius:6px;transition:width .4s"></div>
+      </div>
+      <div style="width:26px;font-weight:650;font-size:13px">${counts[k]}</div>
+    </div>`; }).join('');
+}
+
+/* ===================== 列表渲染 ===================== */
+function statusBadge(status,round){
+  const st=STATUS[status]||STATUS.prep;
+  const rc=(st.round&&round)?`<span class="round-chip">${t('round')+' '+esc(round)}</span>`:'';
+  return `<span class="status-badge st-${st.cls}">${SL(status)}</span>${rc}`;
+}
+function paperStatusBadge(status){
+  const m=PAPER_STATUS[status]||PAPER_STATUS.prep;
+  return `<span class="status-badge st-${m.cls}">${SL(status)}</span>`;
+}
+function deadlineTag(sub){
+  const c=currentEvent(sub);
+  if(FINAL_STATUS.includes(c.status)||!sub.deadline) return '';
+  const d=daysFromToday(sub.deadline);
+  if(d===null) return '';
+  if(d<0) return `<span class="deadline-tag dl-over">&#9888; 已逾期 ${-d} 天（${fmtDate(sub.deadline)}）</span>`;
+  if(d<=7) return `<span class="deadline-tag dl-soon">&#9203; ${d===0?'今天截止':`还剩 ${d} 天`}（${fmtDate(sub.deadline)}）</span>`;
+  return `<span class="deadline-tag dl-ok">截止 ${fmtDate(sub.deadline)}（${d}天）</span>`;
+}
+function buildTimeline(paperId, s){
+  const tl=(s.timeline||[]).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||'')||(a.ts||0)-(b.ts||0));
+  if(!tl.length) return '<div style="color:var(--sub);font-size:12.5px">'+t('emptyNoProgress')+'</div>';
+  return tl.map(e=>{ const es=STATUS[e.status]||STATUS.prep;
+    return `<div class="tl-item">
+      <span class="tl-dot" style="background:${es.color}"></span>
+      <div class="tl-body">
+        <div class="t">${SL(e.status)}${(es.round&&e.round)?`<span class="round-chip">${t('round')+' '+esc(e.round)}</span>`:''} <span class="d">· ${fmtDate(e.date)}</span></div>
+        ${e.note?`<div class="n">${esc(e.note)}</div>`:''}
+      </div>
+      <span class="tl-acts">
+        <button type="button" class="a-flag" title="编辑进展" onclick="editTimeline('${paperId}','${s.id}','${e.id}')">&#9998;</button>
+        <button type="button" class="a-del" title="删除进展" onclick="delTimeline('${paperId}','${s.id}','${e.id}')">×</button>
+      </span>
+    </div>`; }).join('');
+}
+
+/* ===== 全局：论文列表 ===== */
+let collapsedGroups=new Set();
+function renderGlobal(){
+  document.getElementById('paperOnly').style.display='none';
+  document.getElementById('globalOnly').style.display='block';
+  renderStatsGlobal();
+  populateFilters();
+  const q=$('#search').value.trim().toLowerCase();
+  const fa=$('#filterAuthor').value;
+  const fs=$('#filterStatus').value;
+  const fd=$('#filterDiscipline').value;
+  const fy=$('#filterYear').value;
+  const groupBy=$('#groupBy').value;
+  const sortBy=$('#sortBy').value;
+  let papers=DATA.slice();
+  if(q){ papers=papers.filter(p=>{
+    const hay=`${p.projectName} ${p.title} ${p.titleEn} ${authorNames(p)} ${(p.disciplines||[]).join(' ')} ${(p.submissions||[]).map(s=>s.journal+' '+subLevelsText(s)).join(' ')}`.toLowerCase();
+    return hay.includes(q);
+  }); }
+  if(fa){ papers=papers.filter(p=>(p.authorList||[]).some(a=>a.name===fa)); }
+  if(fs){ papers=papers.filter(p=>{
+    const pc=paperCurrent(p).status;
+    if(fs==='working') return pc==='working';
+    if(['accepted','rejected','withdrawn','prep'].includes(fs)) return pc===fs;
+    if(ACTIVE_STATUS.includes(fs)) return pc==='active'&&(p.submissions||[]).some(s=>currentEvent(s).status===fs);
+    return true;
+  }); }
+  if(fd){ papers=papers.filter(p=>(p.disciplines||[]).includes(fd)); }
+  if(fy){ papers=papers.filter(p=>String(paperYear(p))===fy); }
+  papers.sort((a,b)=>{
+    // 任何排序方式下，工作中项目都强制置顶（与所选排序无关）
+    const wa=a.articleStatus==='working'?0:1, wb=b.articleStatus==='working'?0:1;
+    if(wa!==wb) return wa-wb;
+    // 组内再按所选排序方式排列
+    if(sortBy==='title') return projNameText(a).localeCompare(projNameText(b),'zh');
+    if(sortBy==='submit') return (firstSubmit(b)||'').localeCompare(firstSubmit(a)||'');
+    return (b.updatedAt||0)-(a.updatedAt||0);
+  });
+  const list=$('#list');
+  if(!DATA.length){ list.innerHTML=empty(t('emptyNoProject'),t('emptyNoProjectSub')); return; }
+  if(!papers.length){ list.innerHTML=empty(t('emptyNoMatch')); return; }
+  if(groupBy==='none'){ list.innerHTML=papers.map(cardHTML).join(''); return; }
+  const groups={};
+  papers.forEach(p=>{ groupKeys(p,groupBy).forEach(k=>{ (groups[k]=groups[k]||[]).push(p); }); });
+  const gk=Object.keys(groups).sort((a,b)=> groupBy==='year'?b.localeCompare(a):a.localeCompare(b,'zh'));
+  list.innerHTML=gk.map(k=>{
+    const collapsed=collapsedGroups.has(k);
+    return `<div class="group-head ${collapsed?'collapsed':''}" onclick="toggleGroup(this,'${esc(k)}')">
+        <span class="g-caret">&#9662;</span><span>${esc(k)}</span>
+        <span class="g-count">${(groups[k]||[]).length}</span>
+      </div>
+      <div class="group-body">${groups[k].map(cardHTML).join('')}</div>`;
+  }).join('');
+}
+function groupKeys(p,by){
+  if(by==='year') return [paperYear(p)+t('groupYearSuffix')];
+  if(by==='status') return [SL(paperCurrent(p).status)];
+  if(by==='discipline'){ const ds=p.disciplines||[]; return ds.length?ds:[t('unknownDisc')]; }
+  if(by==='author'){ const ns=(p.authorList||[]).map(a=>a.name).filter(Boolean); return ns.length?ns:[t('noAuthor')]; }
+  return ['全部'];
+}
+function toggleGroup(el,key){ if(collapsedGroups.has(key)) collapsedGroups.delete(key); else collapsedGroups.add(key); el.classList.toggle('collapsed'); }
+function cardHTML(p){
+  const pc=paperCurrent(p).status; const PST=PAPER_STATUS[pc]||PAPER_STATUS.prep;
+  const subs=p.submissions||[]; const first=firstSubmit(p);
+  const discBadges=(p.disciplines||[]).map(d=>`<span class="badge" style="background:#ecfdf5;color:#047857">&#128218; ${esc(discLabel(d))}</span>`).join('');
+  if(p.articleStatus==='working'){
+    const ddlTag=p.ddl?deadlineTagFromDate(p.ddl):'';
+    return `<div class="paper-card s-working" data-id="${p.id}">
+      <div class="sub-head">
+        <div style="flex:1;min-width:0;cursor:pointer" onclick="openPaper('${p.id}')">
+          <p class="sub-title">${paperTitleHTML(p)}${showLangBadge(p)}</p>
+          <div class="journal-line">
+            <span class="badge" style="background:#fffbeb;color:#b45309">${t('statWorking')}</span>
+            ${discBadges}
+            ${authorLineHTML(p)}
+          </div>
+        </div>
+        <div style="text-align:right">${paperStatusBadge(pc)}</div>
+      </div>
+      <div class="meta">
+        <span>&#128197; ${t('ddlCreate')}：<b>${fmtDate(new Date(p.createdAt).toISOString())}</b></span>
+        ${p.ddl?`<span>${t('ddlDeadline')}：<b>${fmtDate(p.ddl)}</b></span>`:'<span style="color:var(--sub)">'+t('noDdl')+'</span>'}
+        ${ddlTag}
+      </div>
+      <div class="sub-actions">
+        <button class="btn sm primary" onclick="openPaper('${p.id}')">&#128193; ${t('openFolder')}</button>
+        <button class="btn sm" onclick="openEditPaper('${p.id}')">&#9998; ${t('edit')}</button>
+        <button class="btn sm danger" onclick="delPaper('${p.id}')">&#128465; ${t('delPaper')}</button>
+      </div>
+    </div>`;
+  }
+  const dl=earliestDeadline(p); const dlTag=dl?deadlineTagFromDate(dl):'';
+  return `<div class="paper-card s-${PST.cls}" data-id="${p.id}">
+    <div class="sub-head">
+      <div style="flex:1;min-width:0;cursor:pointer" onclick="openPaper('${p.id}')">
+        <p class="sub-title">${paperTitleHTML(p)}${paperLangBadge(p)}</p>
+        <div class="journal-line">
+          <span class="badge b-zone" style="background:#eef2ff;color:#4338ca">${subs.length}${t('timesSub')}</span>
+          ${discBadges}
+          ${authorLineHTML(p)}
+        </div>
+      </div>
+      <div style="text-align:right">${paperStatusBadge(pc)}</div>
+    </div>
+    <div class="meta">
+      <span>&#128197; ${t('ddlFirst')}：<b>${fmtDate(first)}</b></span>
+      ${p.updatedAt?`<span>${t('ddlUpdate')}：<b>${fmtDate(new Date(p.updatedAt).toISOString())}</b></span>`:''}
+      ${dlTag}
+    </div>
+    <div class="sub-actions">
+      <button class="btn sm primary" onclick="openPaper('${p.id}')">&#128193; ${t('openFolder')}</button>
+      <button class="btn sm" onclick="openEditPaper('${p.id}')">&#9998; ${t('editProject')}</button>
+      <button class="btn sm danger" onclick="delPaper('${p.id}')">&#128465; ${t('delPaper')}</button>
+    </div>
+  </div>`;
+}
+function deadlineTagFromDate(d){
+  const dd=daysFromToday(d);
+  if(dd<0) return `<span class="deadline-tag dl-over">&#9888; ${esc(d)} 逾期 ${-dd} 天</span>`;
+  if(dd<=7) return `<span class="deadline-tag dl-soon">&#9203; ${d} ${dd===0?'今天截止':`剩 ${dd} 天`}</span>`;
+  return `<span class="deadline-tag dl-ok">${d}（${dd}天）</span>`;
+}
+
+/* ===== 论文文件夹视图 ===== */
+let GLOBAL_SCROLL=0, FROM_PAPER=false;
+function openPaper(id){
+  GLOBAL_SCROLL = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+  FROM_PAPER=true; VIEW={mode:'paper',paperId:id}; renderPaper();
+}
+function goGlobal(){
+  const fromPaper=FROM_PAPER; FROM_PAPER=false;
+  VIEW={mode:'global',paperId:null}; renderGlobal();
+  if(fromPaper) window.scrollTo(0, GLOBAL_SCROLL);   // 恢复到进入文件夹前的滚动位置，避免返回主页跳到顶部
+}
+
+function renderPaper(){
+  const p=DATA.find(x=>x.id===VIEW.paperId);
+  if(!p){ goGlobal(); return; }
+  document.getElementById('globalOnly').style.display='none';
+  document.getElementById('paperOnly').style.display='block';
+  const subs=p.submissions||[];
+  const pc=paperCurrent(p).status;
+  $('#pTitle').innerHTML=esc(projNameText(p))+showLangBadge(p);
+  const bt=paperBilingualText(p);
+  $('#pSubTitle').innerHTML=(bt && bt!==(p.projectName||'').trim())?`<span style="color:var(--sub);font-size:13px">论文标题：${esc(bt)}</span>`:'';
+  $('#pAuthors').innerHTML=authorChipsHTML(p)+' '+(p.disciplines||[]).map(d=>`<span class="badge" style="background:#ecfdf5;color:#047857">&#128218; ${esc(discLabel(d))}</span>`).join(' ');
+  $('#pNotes').className='paper-notes'+(p.notes?'':' empty');
+  $('#pNotes').innerHTML=p.notes?esc(p.notes):t('noNotes');
+
+  const accepted=subs.filter(s=>currentEvent(s).status==='accepted').length;
+  const rejected=subs.filter(s=>currentEvent(s).status==='rejected').length;
+  const active=subs.filter(s=>ACTIVE_STATUS.includes(currentEvent(s).status)).length;
+  const decided=accepted+rejected;
+  const hitRate=decided?Math.round(accepted/decided*100):0;
+  let durs=[]; subs.forEach(s=>{ const c=currentEvent(s); if(FINAL_STATUS.includes(c.status)&&s.submitDate){ const dd=decisionDate(s); if(dd){ const d=daysBetween(s.submitDate,dd); if(d>=0) durs.push(d);} } });
+  const avgDur=durs.length?Math.round(durs.reduce((a,b)=>a+b,0)/durs.length):0;
+  const cards=[
+    {k:t('curStatus'), v:SL(pc), dot:PAPER_STATUS[pc].color, nowrap:true},
+    {k:t('statSubs'), v:subs.length, dot:'var(--brand)'},
+    {k:t('statHitRate'), v:hitRate, unit:'%', sub:`${accepted}/${decided||0} ${t('statDecided')}`, dot:'var(--amber)'},
+    {k:t('statAvgDur'), v:avgDur||'—', unit:avgDur?t('statDays'):'', dot:'var(--teal)'},
+    {k:t('statRejected')||'被拒次数', v:rejected, dot:'var(--red)'},
+    {k:t('ddlFirst'), v:fmtDate(firstSubmit(p)), nowrap:true, dot:'var(--blue)'},
+  ];
+  $('#pStats').innerHTML=cards.map(c=>`
+    <div class="stat">
+      <div class="k"><span class="dot" style="background:${c.dot}"></span>${c.k}</div>
+      <div class="v" style="${c.nowrap?'font-size:19px':''}">${c.v}${c.unit?`<small>${c.unit}</small>`:''}${c.sub?`<small>${c.sub}</small>`:''}</div>
+    </div>`).join('');
+
+  const charts=$('#paperCharts');
+  const list=$('#pList');
+  const newBtn=$('#btnNewSub');
+
+  // 工作中：只展示截止日期，不显示投稿区
+  if(p.articleStatus==='working'){
+    newBtn.style.display='none';
+    const ddlTxt=p.ddl?(`${t('ddlDeadline')}：<b>${fmtDate(p.ddl)}</b> ｜ ${deadlineTagFromDate(p.ddl)}`):t('workNoDdl');
+    charts.innerHTML=`<div class="work-panel">
+      <div style="font-size:15px;font-weight:700;margin-bottom:8px">&#128221; ${t('workPanelTitle')}</div>
+      <div style="font-size:13.5px">${ddlTxt}</div>
+      <div style="margin-top:12px;font-size:12.5px">${t('workPanelDesc')}</div>
+    </div>`;
+    list.innerHTML=empty(t('emptyNoSub'),t('workOnlyTrack'));
+    return;
+  }
+
+  // 完成：展示图表 + 投稿列表
+  newBtn.style.display='';
+  charts.innerHTML=`<div class="card chart-card"><h3>&#128202; ${t('paperStatusDist')}</h3><div id="pDonut"></div></div>
+    <div class="card chart-card"><h3>&#128260; ${t('paperHistory')}</h3><div id="pHistory" style="font-size:13px;color:var(--sub)"></div></div>`;
+  renderDonut(subs,'#pDonut');
+  const hist=subs.slice().sort((a,b)=>(a.submitDate||'').localeCompare(b.submitDate||''));
+  $('#pHistory').innerHTML = hist.length? hist.map(s=>{
+    const st=STATUS[currentEvent(s).status]||STATUS.prep;
+    return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px dashed var(--line)">
+      <span class="dot" style="background:${st.color}"></span>
+      <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(s.journal)||t('journal')}</span>
+      <span style="font-size:12px;color:var(--sub)">${fmtDate(s.submitDate)}</span>
+      <b style="color:${st.color};font-size:12.5px">${SL(s.status||'prep')}</b>
+    </div>`; }).join('') : '<div style="color:var(--sub);padding:8px 0">'+t('emptyNoSub')+'</div>';
+
+  if(!subs.length){ list.innerHTML=empty(t('emptyNoSub'),t('emptyNoSubSub')); return; }
+  list.innerHTML=subs.map(s=>{
+    const c=currentEvent(s); const st=STATUS[c.status]||STATUS.prep;
+    return `<div class="sub s-${st.cls}" data-id="${s.id}">
+      <div class="sub-head">
+        <div style="flex:1;min-width:0">
+          <p class="sub-title">&#128214; ${esc(s.journal)||t('journal')}</p>
+          <div class="journal-line">
+            ${subZoneBadge(s)}
+            ${s.impactFactor?`<span class="badge b-if">IF ${esc(s.impactFactor)}</span>`:''}
+            ${s.type?`<span class="badge" style="background:#f1f5f9;color:#475569">${esc(s.type)}</span>`:''}
+          </div>
+        </div>
+        <div style="text-align:right">${statusBadge(c.status,c.round)}</div>
+      </div>
+      <div class="meta">
+        <span>&#128197; ${t('submitDate')}：<b>${fmtDate(s.submitDate)}</b></span>
+        ${deadlineTag(s)}
+      </div>
+      <div class="timeline" id="tl-${s.id}">${buildTimeline(p.id, s)}</div>
+      <div class="sub-actions">
+        <button class="btn sm ghost" onclick="toggleTL('${s.id}')">&#128200; ${t('progress')} (${(s.timeline||[]).length})</button>
+        <button class="btn sm primary" onclick="openProgress('${p.id}','${s.id}')">&#43; ${t('progress')}</button>
+        <button class="btn sm" onclick="openEditSub('${p.id}','${s.id}')">&#9998; ${t('edit')}</button>
+        <button class="btn sm" onclick="openNewSub('${p.id}')">&#8617; ${t('newSub')}</button>
+        <button class="btn sm danger" onclick="delSub('${p.id}','${s.id}')">&#128465; ${t('delSub')}</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleTL(id){ const el=$('#tl-'+id); if(el) el.classList.toggle('open'); }
+
+/* ===================== 删除 ===================== */
+function delPaper(id){
+  const p=DATA.find(x=>x.id===id); if(!p) return;
+  if(!confirm(t('delPaperConfirm', p.title||t('emptyNoProject'), p.submissions?.length||0))) return;
+  DATA=DATA.filter(x=>x.id!==id); save(); goGlobal(); toast(t('delPaperOk'));
+}
+function delSub(paperId,subId){
+  const p=DATA.find(x=>x.id===paperId); if(!p) return;
+  const s=p.submissions.find(x=>x.id===subId); if(!s) return;
+  if(!confirm(t('delSubConfirm', p.title, s.journal||t('journal')))) return;
+  p.submissions=p.submissions.filter(x=>x.id!==subId);
+  p.updatedAt=Date.now(); save(); renderPaper(); toast(t('delSubOk'));
+}
+
+/* ===================== 弹窗基础 ===================== */
+const overlay=$('#overlay');
+function closeModal(){ overlay.classList.remove('open'); overlay.innerHTML=''; }
+overlay.addEventListener('click',e=>{ if(e.target===overlay) closeModal(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+function statusOptions(sel){ return STATUS_ORDER.map(k=>`<option value="${k}" ${k===sel?'selected':''}>${SL(k)}</option>`).join(''); }
+
+/* ===================== 新增项目 + 首次投稿 ===================== */
+function openNewPaper(){
+  TMP_DISC=[]; TMP_AUTHORS=[]; TL_BUF={zh:'',en:''}; F_LANG='zh';
+  overlay.innerHTML=`
+   <div class="modal">
+    <div class="modal-head"><h2>${t('newProject')}</h2><button class="x" onclick="closeModal()">&times;</button></div>
+    <div class="modal-body">
+      <div class="field"><label>${t('projName')} <span class="opt">${t('projNameOpt')}</span></label><input id="f-project" placeholder="例：城市绿化对社会资本的影响"></div>
+      <div id="paperTitleSection">
+        <div class="field">
+          <label>${t('lang')}</label>
+          <select id="f-lang" onchange="toggleLang(this.value)">
+            <option value="zh">${t('zhOpt')}</option>
+            <option value="en">${t('enOpt')}</option>
+            <option value="both">${t('bothOpt')}</option>
+          </select>
+        </div>
+        <div class="field" id="wrapTitle"><label>${t('paperTitle')} <span class="opt">${t('paperTitleOpt')}</span></label><input id="f-title" placeholder="例：城市更新中的社会网络…"></div>
+        <div class="field" id="wrapTitleEn" style="display:none"><label>${t('paperTitleEn')}</label><input id="f-titleEn" placeholder="例：Social Networks in Urban Renewal…"></div>
+      </div>
+      <div class="field"><label>${t('authors')} <span class="opt">${t('authorOpt')}</span></label>
+        <div class="author-box" id="authorBox"></div>
+        <div class="journal-input" style="margin-top:8px">
+          <input id="authorInput" placeholder="${t('authorPlaceholder')}" list="authorMem" onkeydown="if(event.key==='Enter'){event.preventDefault();addAuthor();}">
+          <button class="btn" type="button" onclick="addAuthor()">&#43; ${t('add')}</button>
+          <button class="btn" type="button" onclick="addSelfAuthor()">&#128100; ${t('self')}</button>
+        </div>
+        <datalist id="authorMem"></datalist>
+        <div class="hint">${t('authorHint')}</div>
+      </div>
+      <div class="field"><label>${t('discField')} <span class="opt">${t('discOpt')}</span></label>
+        <div class="combo" id="discCombo">
+          <input id="discInput" class="combo-input" placeholder="${t('discPlaceholder')}" autocomplete="off"
+            oninput="discFilter()" onfocus="discFilter()" onkeydown="if(event.key==='Enter'){event.preventDefault();discEnter();}">
+          <div id="discMenu" class="combo-menu" style="display:none"></div>
+        </div>
+        <div id="discSel" class="disc-sel-wrap"></div>
+      </div>
+      <div class="divider">${t('projStatus')}</div>
+      <div class="field">
+        <label>${t('projStatus')}</label>
+        <select id="f-astatus" onchange="toggleAst(this.value)">
+          <option value="completed">${t('completed')}</option>
+          <option value="working">${t('working')}</option>
+        </select>
+      </div>
+      <div class="field" id="wrapDDL" style="display:none"><label>${t('nextDdl')}</label><input id="f-ddl" type="date"></div>
+      <div class="field"><label>${t('projNote')} <span class="opt">${t('projNoteOpt')}</span></label><textarea id="f-pnote" placeholder="${t('projNotePh')}"></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost" onclick="closeModal()">${t('cancel')}</button>
+      <button class="btn primary" onclick="saveNewPaper()">${t('create')}</button>
+    </div>
+   </div>`;
+  overlay.classList.add('open');
+  toggleLang('zh'); renderDiscSel(); fillAuthorMem(); renderAuthorChips();
+  setTimeout(()=>$('#f-project').focus(),50);
+}
+function toggleAst(v){
+  const w=$('#wrapDDL'); if(w) w.style.display=(v==='working')?'':'none';
+  const ps=$('#paperTitleSection'); if(ps) ps.style.display=(v==='working')?'none':'';
+}
+function saveNewPaper(){
+  const g=x=>$('#'+x).value.trim();
+  const projectName=g('f-project');
+  if(!projectName){ toast(t('pleaseProjName')); return; }
+  const articleStatus=$('#f-astatus').value;
+  let lang='zh', title='', titleEn='';
+  if(articleStatus==='completed'){
+    lang=$('#f-lang').value;
+    if(lang==='both'){ title=g('f-title'); titleEn=g('f-titleEn'); }
+    else { title=g('f-title'); }
+    // 论文标题选填：都不填也允许（仅以项目名标识）
+  }
+  const paper={ id:uid(), projectName, title, titleEn, lang, authorList:TMP_AUTHORS.slice(), authors:authorNames({authorList:TMP_AUTHORS}),
+    disciplines:TMP_DISC.slice(), ddl:(articleStatus==='working')?g('f-ddl'):'', articleStatus,
+    notes:g('f-pnote'), createdAt:Date.now(), updatedAt:Date.now(), submissions:[] };
+  DATA.unshift(paper); save();
+  if(articleStatus==='completed'){ openPaper(paper.id); closeModal(); toast(t('createdCompleted')); }
+  else { goGlobal(); closeModal(); toast(t('createdWorking')); }
+}
+
+/* ===================== 编辑项目信息 ===================== */
+function openEditPaper(id){
+  const p=DATA.find(x=>x.id===id); if(!p) return;
+  TMP_DISC=(p.disciplines||[]).slice(); TL_BUF_E={zh:'',en:''}; E_LANG=(p.lang||'zh');
+  TMP_AUTHORS=(p.authorList||[]).map(a=>({name:a.name,self:!!a.self,cofirst:!!a.cofirst,corresponding:!!a.corresponding}));
+  const isWorking=p.articleStatus==='working';
+  overlay.innerHTML=`
+   <div class="modal">
+    <div class="modal-head"><h2>${t('editProject')}</h2><button class="x" onclick="closeModal()">&times;</button></div>
+    <div class="modal-body">
+      <div class="field"><label>${t('projName')} <span class="opt">${t('projNameOpt')}</span></label><input id="e-project" value="${esc(p.projectName)}"></div>
+      <div id="paperTitleSection" style="${isWorking?'display:none':''}">
+        <div class="field">
+          <label>${t('lang')}</label>
+          <select id="e-lang" onchange="toggleEditLang(this.value)">
+            <option value="zh" ${p.lang==='zh'?'selected':''}>${t('zhOpt')}</option>
+            <option value="en" ${p.lang==='en'?'selected':''}>${t('enOpt')}</option>
+            <option value="both" ${p.lang==='both'?'selected':''}>${t('bothOpt')}</option>
+          </select>
+        </div>
+        <div class="field" id="wrapETitle"><label>${t('paperTitle')} <span class="opt">${t('paperTitleOpt')}</span></label><input id="e-title" value="${esc(p.title)}"></div>
+        <div class="field" id="wrapETitleEn" style="display:${p.lang==='both'?'':'none'}"><label>${t('paperTitleEn')}</label><input id="e-titleEn" value="${esc(p.titleEn)}"></div>
+      </div>
+      <div class="field"><label>${t('authors')} <span class="opt">${t('authorOpt')}</span></label>
+        <div class="author-box" id="authorBox"></div>
+        <div class="journal-input" style="margin-top:8px">
+          <input id="authorInput" placeholder="${t('authorPlaceholder')}" list="authorMem" onkeydown="if(event.key==='Enter'){event.preventDefault();addAuthor();}">
+          <button class="btn" type="button" onclick="addAuthor()">&#43; ${t('add')}</button>
+          <button class="btn" type="button" onclick="addSelfAuthor()">&#128100; ${t('self')}</button>
+        </div>
+        <datalist id="authorMem"></datalist>
+        <div class="hint">${t('authorHint')}</div>
+      </div>
+      <div class="field"><label>${t('discField')} <span class="opt">${t('discOpt')}</span></label>
+        <div class="combo" id="discCombo">
+          <input id="discInput" class="combo-input" placeholder="${t('discPlaceholder')}" autocomplete="off"
+            oninput="discFilter()" onfocus="discFilter()" onkeydown="if(event.key==='Enter'){event.preventDefault();discEnter();}">
+          <div id="discMenu" class="combo-menu" style="display:none"></div>
+        </div>
+        <div id="discSel" class="disc-sel-wrap"></div>
+      </div>
+      <div class="divider">${t('projStatus')}</div>
+      <div class="field">
+        <label>${t('projStatus')}</label>
+        <select id="e-astatus" onchange="toggleEditAst(this.value)">
+          <option value="completed" ${p.articleStatus==='completed'?'selected':''}>${t('completed')}</option>
+          <option value="working" ${p.articleStatus==='working'?'selected':''}>${t('working')}</option>
+        </select>
+      </div>
+      <div class="field" id="wrapEDDL" style="display:${isWorking?'':'none'}"><label>${t('nextDdl')}</label><input id="e-ddl" type="date" value="${p.ddl||''}"></div>
+      <div class="field"><label>${t('projNote')}</label><textarea id="e-notes" placeholder="${t('projNotePh')}">${esc(p.notes)}</textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost" onclick="closeModal()">${t('cancel')}</button>
+      <button class="btn primary" onclick="saveEditPaper('${id}')">${t('save')}</button>
+    </div>
+   </div>`;
+  overlay.classList.add('open');
+  toggleEditLang(p.lang||'zh'); renderDiscSel(); fillAuthorMem(); renderAuthorChips();
+}
+function toggleEditAst(v){
+  const w=$('#wrapEDDL'); if(w) w.style.display=(v==='working')?'':'none';
+  const ps=$('#paperTitleSection'); if(ps) ps.style.display=(v==='working')?'none':'';
+}
+function toggleEditLang(v){ applyLangSwitch('e-title','e-titleEn',TL_BUF_E,'wrapETitle','wrapETitleEn',v,E_LANG); E_LANG=v; }
+function saveEditPaper(id){
+  const p=DATA.find(x=>x.id===id); if(!p) return;
+  const projectName=$('#e-project').value.trim();
+  if(!projectName){ toast(t('pleaseProjName')); return; }
+  p.projectName=projectName;
+  const articleStatus=$('#e-astatus').value;
+  if(articleStatus==='completed'){
+    const lang=$('#e-lang').value;
+    if(lang==='both'){ p.title=$('#e-title').value.trim(); p.titleEn=$('#e-titleEn').value.trim(); }
+    else { p.title=$('#e-title').value.trim(); p.titleEn=''; }
+    p.lang=lang;
+  } else { p.title=''; p.titleEn=''; p.lang='zh'; }
+  p.authorList=TMP_AUTHORS.slice(); p.authors=authorNames(p);
+  p.disciplines=TMP_DISC.slice();
+  p.articleStatus=articleStatus;
+  p.ddl=(articleStatus==='working')?($('#e-ddl').value.trim()):'';
+  p.notes=$('#e-notes').value.trim();
+  p.updatedAt=Date.now(); save();
+  if(VIEW.mode==='paper') renderPaper(); else renderGlobal();
+  closeModal(); toast('已更新项目信息');
+}
+
+/* ===================== 转投 / 新投稿（同一论文） ===================== */
+function openNewSub(paperId){
+  const p=DATA.find(x=>x.id===paperId); if(!p) return;
+  overlay.innerHTML=`
+   <div class="modal">
+    <div class="modal-head"><h2>${t('newSub')} · ${esc(projNameText(p))}</h2><button class="x" onclick="closeModal()">&times;</button></div>
+    <div class="modal-body">
+      <div class="field">
+        <label>${t('journal')}</label>
+        <div class="journal-input">
+          <input id="f-journal" placeholder="${t('journal')}">
+          <button class="btn" type="button" onclick="matchJournal()">&#128269; ${t('autoMatch')}</button>
+        </div>
+        <div class="hint" id="matchHint">${t('matchHint')}</div>
+      </div>
+      <div class="field" style="grid-column:1/-1">
+        <label>${t('levels')}</label>
+        <div id="f-levels" class="level-chips">${levelChipsHTML([])}</div>
+        <input id="f-zone-custom" class="disc-custom" style="margin-top:6px" placeholder="${t('levelCustom')}">
+      </div>
+      <div class="row2">
+        <div class="field"><label>${t('impactFactor')}</label><input id="f-if" placeholder="9.4"></div>
+        <div class="field"><label>${t('type')}</label><select id="f-type"><option value="">${t('typeUnspec')}</option><option>${t('typeJournal')}</option><option>${t('typeConf')}</option><option>${t('typePre')}</option></select></div>
+      </div>
+      <div class="row3">
+        <div class="field"><label>${t('submitDate')}</label><input id="f-submit" type="date"></div>
+        <div class="field"><label>${t('curStatus')}</label><select id="f-status">${statusOptions('submitted')}</select></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>${t('round')} <span class="opt">${t('roundOpt')}</span></label><input id="f-round" type="number" min="1" placeholder="1"></div>
+        <div class="field"><label>${t('nextDdl2')}</label><input id="f-deadline" type="date"></div>
+      </div>
+      <div class="field"><label>${t('subNote')}</label><textarea id="f-snote" placeholder="${t('subNotePh')}"></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost" onclick="closeModal()">${t('cancel')}</button>
+      <button class="btn primary" onclick="saveNewSub('${paperId}')">${t('addSub')}</button>
+    </div>
+   </div>`;
+  overlay.classList.add('open');
+}
+function saveNewSub(paperId){
+  const p=DATA.find(x=>x.id===paperId); if(!p) return;
+  const g=x=>$('#'+x).value.trim();
+  if(!g('f-journal')){ toast(t('pleaseJournal')); return; }
+  const status=g('f-status'), round=g('f-round');
+  const levels=readLevelCheckboxes();
+  const zone=(levels.length===0)?g('f-zone-custom'):'';   // 仅当未勾选任何等级时用自定义文本
+  const sub={ id:uid(), journal:g('f-journal'), type:g('f-type'), levels, zone, impactFactor:g('f-if'),
+    submitDate:g('f-submit'), status, round, deadline:g('f-deadline'), note:g('f-snote'),
+    timeline:[{id:uid(),status,round,date:g('f-submit')||new Date().toISOString().slice(0,10),note:g('f-snote'),ts:Date.now()}] };
+  p.submissions.push(sub); p.updatedAt=Date.now();
+  save(); renderPaper(); closeModal(); toast(t('addSub'));
+}
+
+/* ===================== 编辑投稿 ===================== */
+function openEditSub(paperId,subId){
+  const p=DATA.find(x=>x.id===paperId); if(!p) return;
+  const s=p.submissions.find(x=>x.id===subId); if(!s) return;
+  const c=currentEvent(s);
+  overlay.innerHTML=`
+   <div class="modal">
+    <div class="modal-head"><h2>${t('edit')} · ${esc(paperTitleText(p))}</h2><button class="x" onclick="closeModal()">&times;</button></div>
+    <div class="modal-body">
+      <div class="field">
+        <label>${t('journal')}</label>
+        <div class="journal-input">
+          <input id="f-journal" value="${esc(s.journal)}">
+          <button class="btn" type="button" onclick="matchJournal()">&#128269; ${t('autoMatch')}</button>
+        </div>
+        <div class="hint" id="matchHint">${t('matchHint')}</div>
+      </div>
+      <div class="field" style="grid-column:1/-1">
+        <label>${t('levels')}</label>
+        <div id="f-levels" class="level-chips">${levelChipsHTML(s.levels||[])}</div>
+        <input id="f-zone-custom" class="disc-custom" style="margin-top:6px" value="${esc(!(s.levels&&s.levels.length) && s.zone ? s.zone : '')}" placeholder="${t('levelCustom')}">
+      </div>
+      <div class="row2">
+        <div class="field"><label>${t('impactFactor')}</label><input id="f-if" value="${esc(s.impactFactor)}"></div>
+        <div class="field"><label>${t('type')}</label><select id="f-type">${['',t('typeJournal'),t('typeConf'),t('typePre')].map(ty=>`<option ${ty===s.type?'selected':''}>${ty}</option>`).join('')}</select></div>
+      </div>
+      <div class="row3">
+        <div class="field"><label>${t('submitDate')}</label><input id="f-submit" type="date" value="${esc(s.submitDate)}"></div>
+        <div class="field"><label>${t('curStatus')}</label><select id="f-status">${statusOptions(c.status)}</select></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>${t('round')} <span class="opt">${t('roundOpt')}</span></label><input id="f-round" type="number" min="1" value="${esc(c.round)}" placeholder="1"></div>
+        <div class="field"><label>${t('nextDdl2')}</label><input id="f-deadline" type="date" value="${esc(s.deadline)}"></div>
+      </div>
+      <div class="field"><label>${t('subNote')}</label><textarea id="f-snote">${esc(s.note)}</textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost" onclick="closeModal()">${t('cancel')}</button>
+      <button class="btn primary" onclick="saveEditSub('${paperId}','${subId}')">${t('save')}</button>
+    </div>
+   </div>`;
+  overlay.classList.add('open');
+}
+function saveEditSub(paperId,subId){
+  const p=DATA.find(x=>x.id===paperId); if(!p) return;
+  const s=p.submissions.find(x=>x.id===subId); if(!s) return;
+  const g=x=>$('#'+x).value.trim();
+  const levels=readLevelCheckboxes();
+  const zone=(levels.length===0)?g('f-zone-custom'):'';
+  Object.assign(s,{ journal:g('f-journal'), type:g('f-type'), levels, zone, impactFactor:g('f-if'),
+    submitDate:g('f-submit'), status:g('f-status'), round:g('f-round'), deadline:g('f-deadline'), note:g('f-snote') });
+  if(!s.timeline||!s.timeline.length){ s.timeline=[{id:uid(),status:s.status,round:s.round,date:s.submitDate||new Date().toISOString().slice(0,10),note:s.note,ts:Date.now()}]; }
+  p.updatedAt=Date.now(); save(); renderPaper(); closeModal(); toast(t('updatedSub'));
+}
+
+/* ===================== 记录进展 ===================== */
+function openProgress(paperId,subId){
+  const p=DATA.find(x=>x.id===paperId); if(!p) return;
+  const s=p.submissions.find(x=>x.id===subId); if(!s) return;
+  const c=currentEvent(s); const today=new Date().toISOString().slice(0,10);
+  overlay.innerHTML=`
+   <div class="modal">
+    <div class="modal-head"><h2>${t('progress')} · ${esc(s.journal||paperTitleText(p))}</h2><button class="x" onclick="closeModal()">&times;</button></div>
+    <div class="modal-body">
+      <div class="row3">
+        <div class="field"><label>${t('submitDate')}</label><input id="p-date" type="date" value="${today}"></div>
+        <div class="field"><label>${t('newStatus')}</label><select id="p-status">${statusOptions(c.status)}</select></div>
+        <div class="field"><label>${t('round2')}</label><input id="p-round" type="number" min="1" value="${esc(c.round)}" placeholder="${t('roundOpt')}"></div>
+      </div>
+      <div class="field"><label>${t('nextReply')} <span class="opt">${t('paperTitleOpt')}</span></label><input id="p-deadline" type="date" value="${esc(s.deadline)}"></div>
+      <div class="field"><label>${t('reviewNote')}</label><textarea id="p-note" placeholder="${t('reviewNotePh')}"></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost" onclick="closeModal()">${t('cancel')}</button>
+      <button class="btn primary" onclick="saveProgress('${paperId}','${subId}')">${t('addProgress')}</button>
+    </div>
+   </div>`;
+  overlay.classList.add('open');
+}
+function saveProgress(paperId,subId){
+  const p=DATA.find(x=>x.id===paperId); if(!p) return;
+  const s=p.submissions.find(x=>x.id===subId); if(!s) return;
+  const status=$('#p-status').value, round=$('#p-round').value.trim();
+  s.timeline=s.timeline||[];
+  s.timeline.push({id:uid(),status,round,date:$('#p-date').value||new Date().toISOString().slice(0,10),note:$('#p-note').value.trim(),ts:Date.now()});
+  s.status=status; s.round=round; s.deadline=$('#p-deadline').value;
+  p.updatedAt=Date.now(); save(); renderPaper(); closeModal(); toast(t('addProgress'));
+  setTimeout(()=>{ const el=$('#tl-'+subId); if(el) el.classList.add('open'); },100);
+}
+/* 编辑单条进展记录 */
+function editTimeline(paperId,subId,tlId){
+  const p=DATA.find(x=>x.id===paperId); if(!p) return;
+  const s=p.submissions.find(x=>x.id===subId); if(!s) return;
+  const e=(s.timeline||[]).find(x=>x.id===tlId); if(!e) return;
+  overlay.innerHTML=`
+   <div class="modal">
+    <div class="modal-head"><h2>${t('editProgress')} · ${esc(s.journal||paperTitleText(p))}</h2><button class="x" onclick="closeModal()">&times;</button></div>
+    <div class="modal-body">
+      <div class="row3">
+        <div class="field"><label>${t('submitDate')}</label><input id="p-date" type="date" value="${esc(e.date)}"></div>
+        <div class="field"><label>${t('curStatus')}</label><select id="p-status">${statusOptions(e.status)}</select></div>
+        <div class="field"><label>${t('round2')}</label><input id="p-round" type="number" min="1" value="${esc(e.round)}" placeholder="${t('roundOpt')}"></div>
+      </div>
+      <div class="field"><label>${t('reviewNote')}</label><textarea id="p-note" placeholder="${t('reviewNotePh')}">${esc(e.note)}</textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost" onclick="closeModal()">${t('cancel')}</button>
+      <button class="btn primary" onclick="saveTimelineEdit('${paperId}','${subId}','${tlId}')">${t('saveEdit')}</button>
+    </div>
+   </div>`;
+  overlay.classList.add('open');
+}
+function saveTimelineEdit(paperId,subId,tlId){
+  const p=DATA.find(x=>x.id===paperId); if(!p) return;
+  const s=p.submissions.find(x=>x.id===subId); if(!s) return;
+  const e=(s.timeline||[]).find(x=>x.id===tlId); if(!e) return;
+  e.status=$('#p-status').value; e.round=$('#p-round').value.trim(); e.date=$('#p-date').value||e.date; e.note=$('#p-note').value.trim();
+  // 若编辑的是最新一条，同步该投稿的当前状态 / 轮次
+  const sorted=(s.timeline||[]).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||'')||(a.ts||0)-(b.ts||0));
+  const last=sorted[sorted.length-1];
+  if(last && last.id===tlId){ s.status=e.status; s.round=e.round; }
+  p.updatedAt=Date.now(); save(); renderPaper(); closeModal(); toast(t('updatedProgress'));
+  setTimeout(()=>{ const el=$('#tl-'+subId); if(el) el.classList.add('open'); },100);
+}
+function delTimeline(paperId,subId,tlId){
+  const p=DATA.find(x=>x.id===paperId); if(!p) return;
+  const s=p.submissions.find(x=>x.id===subId); if(!s) return;
+  if(!confirm(t('delProgressConfirm'))) return;
+  s.timeline=(s.timeline||[]).filter(x=>x.id!==tlId);
+  const sorted=(s.timeline||[]).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||'')||(a.ts||0)-(b.ts||0));
+  const last=sorted[sorted.length-1];
+  if(last){ s.status=last.status; s.round=last.round||''; }
+  else { s.status='prep'; s.round=''; }
+  p.updatedAt=Date.now(); save(); renderPaper(); toast(t('delProgress'));
+}
+
+/* ===================== 期刊等级体系 ===================== */
+// 期刊等级（按族分组显示：JCR > CSSCI 三档 > CSCD > CCF > 北大核心 > EI > Scopus > 中英文普刊；优先级见 LEVEL_RANK，原等级排序不变）
+const JLEVELS = [
+  {key:'jcr1',         label:'JCR Q1',     color:'#dc2626'},
+  {key:'jcr2',         label:'JCR Q2',     color:'#ea580c'},
+  {key:'jcr3',         label:'JCR Q3',     color:'#d97706'},
+  {key:'jcr4',         label:'JCR Q4',     color:'#ca8a04'},
+  {key:'cssci',        label:'CSSCI',      color:'#2563eb'},
+  {key:'cssci_ext',    label:'CSSCI扩展版',color:'#3b82f6'},
+  {key:'cssci_series', label:'CSSCI集刊', color:'#60a5fa'},
+  {key:'cscd',         label:'CSCD',       color:'#0891b2'},
+  {key:'ccf_a',        label:'CCF-A',      color:'#be123c'},
+  {key:'ccf_b',        label:'CCF-B',      color:'#db2777'},
+  {key:'ccf_c',        label:'CCF-C',      color:'#e879a8'},
+  {key:'pku',          label:'北大核心',   color:'#7c3aed'},
+  {key:'ei',           label:'EI',         color:'#0e7490'},
+  {key:'scopus',       label:'Scopus',     color:'#0d9488'},
+  {key:'ordinary',     label:'中英文普刊', color:'#94a3b8'},
+];
+// 显示优先级（数值越大越优先；本次仅新增 ei，已有等级数值保持不变）
+const LEVEL_RANK = {jcr1:14,jcr2:13,jcr3:12,jcr4:11,cssci:10,cscd:9,cssci_ext:8,cssci_series:7,ccf_a:6,pku:5,ccf_b:4,ei:3.5,scopus:3,ccf_c:2,ordinary:1};
+function levelMeta(key){ return JLEVELS.find(x=>x.key===key)||null; }
+function levelLabel(key){ const m=levelMeta(key); return m?m.label:(key||''); }
+// 投稿实际勾选的等级数组
+function subLevels(s){ return (s&&Array.isArray(s.levels))?s.levels:[]; }
+// 取最高优先级等级 key（用于显示）
+function bestLevelKey(s){ const ls=subLevels(s); if(!ls.length) return ''; return ls.slice().sort((a,b)=>(LEVEL_RANK[b]||0)-(LEVEL_RANK[a]||0))[0]; }
+// 显示文本：取最高值
+function subZoneLabel(s){ const k=bestLevelKey(s); if(k) return levelLabel(k); if(s&&s.zone) return s.zone; return ''; }
+// 全部等级文本（导出 / 搜索用）
+function subLevelsText(s){ const ls=subLevels(s); if(ls.length) return ls.map(levelLabel).join('、'); if(s&&s.zone) return s.zone; return ''; }
+// 卡片徽章：显示最高值，其余以次级标签呈现
+function subZoneBadge(s){
+  const ls=subLevels(s);
+  if(!ls.length){ const z=s&&s.zone; return z?`<span class="badge b-zone">${esc(z)}</span>`:''; }
+  const best=bestLevelKey(s); const rest=ls.filter(x=>x!==best).map(levelLabel);
+  let h=`<span class="badge b-zone" title="${esc(ls.map(levelLabel).join(' / '))}">${esc(levelLabel(best))}</span>`;
+  if(rest.length) h+=`<span class="badge b-zone2" title="同时收录于">${esc(rest.join('、'))}</span>`;
+  return h;
+}
+// 由旧版自由文本分区推断等级 key（迁移用）
+function inferLevel(zone){
+  if(!zone) return '';
+  const z=String(zone); let m;
+  if((m=z.match(/jcr[\s_-]?q?\s*([1-4])/i))||(m=z.match(/q([1-4])/i))||(m=z.match(/([1-4])\s*区/i))) return 'jcr'+m[1];
+  if(/cssci/i.test(z)){ if(/集刊|辑刊|series/i.test(z)) return 'cssci_series'; if(/扩展/.test(z)) return 'cssci_ext'; return 'cssci'; }
+  if(/cscd|中国科学引文数据库|中科院.*引文/i.test(z)) return 'cscd';
+  if(/ccf/i.test(z)){ const m=z.match(/c\s*c\s*f[-\s]?([abc])/i)||z.match(/([abc])\s*类/i); if(m) return 'ccf_'+m[1].toLowerCase(); return 'ccf_a'; }
+  if(/北大|北核|中文核心/.test(z)) return 'pku';
+  if(/scopus/i.test(z)) return 'scopus';
+  if(/\bei\b|工程索引/i.test(z)) return 'ei';
+  if(/普通|普刊|一般期刊/.test(z)) return 'ordinary';
+  return '';
+}
+// 投稿表单中的多选 chips
+function levelChipsHTML(selected){
+  const sel=new Set(selected||[]);
+  return JLEVELS.map(l=>`<label class="lvl-chip"><input type="checkbox" class="lvl-cb" value="${l.key}" ${sel.has(l.key)?'checked':''}><span class="lv-dot" style="background:${l.color}"></span>${l.label}</label>`).join('');
+}
+function readLevelCheckboxes(){ return Array.from(document.querySelectorAll('#f-levels .lvl-cb:checked')).map(c=>c.value); }
+
+/* ===================== 期刊自动匹配 (easyScholar) ===================== */
+// 从 easyScholar 返回数据识别所有命中的等级（JCR 不分 sci/ssci/ahci/esci，只取分区；其他核心库一并识别）
+function detectLevels(all){
+  const out=[];
+  const jcrRaw = all.sci||all.ssci||all.ahci||all.esci||'';        // JCR 体系（含 ESCI）
+  if(jcrRaw){ const q=String(jcrRaw).replace(/[^1-4]/g,''); if(q && '1234'.indexOf(q)>=0) out.push('jcr'+q); }
+  // CSSCI：easyScholar 的 all.cssci 字段值是描述文本，如 "CSSCI"（正版）、"CSSCI扩展版" 或 "CSSCI集刊"
+  if(all.cssci){
+    const cv=String(all.cssci);
+    if(/集刊|辑刊|series/i.test(cv)) out.push('cssci_series');        // CSSCI 集刊
+    else if(/扩展/.test(cv)) out.push('cssci_ext');                  // CSSCI 扩展版
+    else out.push('cssci');                                          // 南大核心（正版）
+  }
+  // CSCD：中国科学引文数据库（核心库）
+  if(all.cscd){ const cv=String(all.cscd).trim(); if(/^(核心|cscd|1)$/i.test(cv)) out.push('cscd'); }
+  // CCF：中国计算机学会推荐国际期刊 / 会议（A / B / C 类）
+  if(all.ccf){ const ccfv=String(all.ccf).toUpperCase(); let m=ccfv.match(/CCF[-\s]?([ABC])/); if(!m) m=ccfv.match(/([ABC])/); if(m) out.push('ccf_'+m[1].toLowerCase()); }
+  if(all.pku||all.pkucore||all['北大核心']) out.push('pku');   // 北大核心
+  if(all.scopus) out.push('scopus');                               // Scopus
+  // EI：工程索引（Engineering Index）
+  if(all.ei){ const cv=String(all.ei).trim().toLowerCase(); if(cv && !/^(否|0|no|none|false)$/.test(cv)) out.push('ei'); }
+  return out;
+}
+async function matchJournal(){
+  const name=$('#f-journal').value.trim();
+  const hint=$('#matchHint');
+  if(!name){ hint.className='hint err'; hint.textContent=t('matchNoName'); return; }
+  const key=getKey();
+  if(!key){ hint.className='hint err'; hint.innerHTML=t('noKey'); return; }
+  hint.className='hint'; hint.textContent=t('matching');
+  try{
+    const url=`https://www.easyscholar.cc/open/getPublicationRank?secretKey=${encodeURIComponent(key)}&publicationName=${encodeURIComponent(name)}`;
+    const r=await fetch(url); const res=await r.json();
+    if(res.code!==200){ hint.className='hint err'; hint.textContent=t('matchFail')+(res.msg||t('matchNotFound')); return; }
+    const all=(((res.data||{}).officialRank||{}).all)||{};
+    if(!all||!Object.keys(all).length){ hint.className='hint err'; hint.textContent=t('matchNotFound'); return; }
+    const det=detectLevels(all);
+    // 勾选识别到的等级（覆盖式：反映 API 结果）
+    document.querySelectorAll('#f-levels .lvl-cb').forEach(cb=>{ cb.checked = det.includes(cb.value); });
+    const ifv=all.sciif||all.sciif5||'';
+    if(ifv) $('#f-if').value=ifv;
+    const cust=$('#f-zone-custom'); if(cust){ cust.style.display=det.length?'none':''; if(det.length) cust.value=''; }
+    const bits=[];
+    if(det.length) bits.push(det.map(levelLabel).join('、'));
+    if(ifv) bits.push('IF '+ifv);
+    let msg=t('matchOk')+(bits.join(' · ')||'');
+    if(!det.length) msg+=t('matchNoLevel');
+    hint.className='hint ok'; hint.textContent=msg;
+  }catch(e){ hint.className='hint err'; hint.textContent=t('matchErr')+e.message; }
+}
+
+/* ===================== 设置 API 密钥 ===================== */
+function openSettings(){
+  overlay.innerHTML=`
+   <div class="modal">
+    <div class="modal-head"><h2>&#9881;&#65039; ${t('apiSettings')}</h2><button class="x" onclick="closeModal()">&times;</button></div>
+    <div class="modal-body">
+      <div class="field">
+        <label>${t('secretKey')}</label>
+        <input id="s-key" value="${esc(getKey())}" placeholder="${t('keyPlaceholder')}">
+        <div class="hint">${t('keyHint')}</div>
+      </div>
+      <div class="field">
+        <label>${t('selfName')}</label>
+        <input id="s-self" value="${esc(getSelfName())}" placeholder="${t('selfNamePh')}">
+        <div class="hint">${t('selfHint')}</div>
+      </div>
+      <div style="background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:12.5px;color:#475569;line-height:1.7">
+        <b>${t('getKeyHow')}</b><br>
+        1. <a href="https://www.easyscholar.cc/" target="_blank">easyscholar.cc</a><br>
+        2. 「我的信息 → 开放接口」<br>
+        3. 复制密钥，粘贴到上方<br>
+        <span style="color:var(--sub)">JCR Q1-Q4 / EI / Scopus / CSSCI / CSSCI扩展版 / 北大核心 / 中英文普刊。中文 SSCI / CSSCI 可在「期刊等级」手动选择。</span>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost" onclick="closeModal()">${t('cancel')}</button>
+      <button class="btn primary" onclick="saveSettings()">${t('save')}</button>
+    </div>
+   </div>`;
+  overlay.classList.add('open');
+}
+function saveSettings(){ setKey($('#s-key').value.trim()); setSelfName($('#s-self').value.trim()); closeModal(); toast(t('settingsSaved')); }
+
+/* 更新日志 */
+function openChangelog(){
+  const rows=CHANGELOG.map(c=>`
+    <div class="clog-ver">
+      <div class="clog-head"><span class="clog-v">v${esc(c.v)}</span><span class="clog-date">${esc(c.date)}</span>${c.v===APP_VERSION?'<span class="clog-cur">当前</span>':''}</div>
+      <ul class="clog-items">${c.items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul>
+    </div>`).join('');
+  overlay.innerHTML=`
+   <div class="modal" style="max-width:560px">
+    <div class="modal-head"><h2>&#128220; ${t('changelog')}</h2><button class="x" onclick="closeModal()">&times;</button></div>
+    <div class="modal-body" style="max-height:64vh;overflow:auto">${rows}</div>
+    <div class="modal-foot"><button class="btn primary" onclick="closeModal()">${t('close')}</button></div>
+   </div>`;
+  overlay.classList.add('open');
+}
+
+/* ===================== 导入 / 导出 ===================== */
+function exportData(){
+  overlay.innerHTML=`
+   <div class="modal">
+    <div class="modal-head"><h2>&#128228; ${t('exportData')}</h2><button class="x" onclick="closeModal()">&times;</button></div>
+    <div class="modal-body">
+      <p style="margin-top:0;color:var(--sub);font-size:13px">${t('exportDesc')}</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn primary" onclick="doExportJSON()">&#128190; ${t('exportJSON')}</button>
+        <button class="btn" onclick="doExportCSV()">&#128202; ${t('exportCSV')}</button>
+      </div>
+    </div>
+   </div>`;
+  overlay.classList.add('open');
+}
+function download(name,content,type){
+  const blob=new Blob([content],{type}); const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download=name; a.click(); URL.revokeObjectURL(a.href);
+}
+function doExportJSON(){ download(`投稿记录_${new Date().toISOString().slice(0,10)}.json`, JSON.stringify(DATA,null,2),'application/json'); toast(t('exportedJSON')); }
+function doExportCSV(){
+  const head=[t('projName'),t('paperTitle'),'EN',t('lang'),t('discField'),t('projStatus'),t('authors'),t('journal'),t('type'),t('levels'),t('impactFactor'),t('submitDate'),t('curStatus'),t('round'),t('nextDdl2'),t('progress'),t('subNote')];
+  const rows=[];
+  DATA.forEach(p=>{ const ast=(p.articleStatus==='working')?t('statWorking'):(p.articleStatus||t('completed'));
+    (p.submissions||[]).forEach(s=>{ const c=currentEvent(s);
+      rows.push([projNameText(p),paperBilingualText(p),p.titleEn||'',p.lang,(p.disciplines||[]).join('；'),ast,authorsExport(p),s.journal,s.type,subLevelsText(s),s.impactFactor,s.submitDate,SL(c.status),c.round,s.deadline,(s.timeline||[]).length,(s.note||'').replace(/\n/g,' ')]); });
+    if(!(p.submissions||[]).length) rows.push([projNameText(p),paperBilingualText(p),p.titleEn||'',p.lang,(p.disciplines||[]).join('；'),ast,authorsExport(p),'','','','','','','','','','']);
+  });
+  const csv=[head,...rows].map(r=>r.map(v=>`"${String(v==null?'':v).replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  download(`投稿记录_${new Date().toISOString().slice(0,10)}.csv`,'\ufeff'+csv,'text/csv'); toast(t('exportedCSV'));
+}
+function importData(){
+  const inp=document.createElement('input'); inp.type='file'; inp.accept='.json,application/json';
+  inp.onchange=e=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader();
+    rd.onload=()=>{ try{
+      const arr=JSON.parse(rd.result); if(!Array.isArray(arr)) throw new Error('格式不对');
+      const papers=arr.map(x=> normalizePaper(x && x.submissions ? x : migrateSub(x)));
+      if(!confirm(t('importConfirm', papers.length))) return;
+      const ids=new Set(DATA.map(x=>x.id));
+      papers.forEach(x=>{ if(!x.id) x.id=uid(); if(!ids.has(x.id)){ DATA.push(x); ids.add(x.id);} });
+      save(); if(VIEW.mode==='paper') renderPaper(); else renderGlobal(); toast(t('importSuccess'));
+    }catch(err){ alert(t('importFail')+err.message); } };
+    rd.readAsText(f); };
+  inp.click();
+}
+
+/* ===================== 初始化 ===================== */
+function initFilters(){
+  const sel=$('#filterStatus');
+  STATUS_ORDER.forEach(k=>{ const o=document.createElement('option'); o.value=k; o.textContent=SL(k); sel.appendChild(o); });
+  const ow=document.createElement('option'); ow.value='working'; ow.textContent=t('statWorking')+'（'+t('nextDdl')+'）'; sel.appendChild(ow);
+}
+/* 动态填充 学科 / 年度 / 作者 筛选项，保留当前选中值 */
+function populateFilters(){
+  const ds=$('#filterDiscipline'); const curDs=ds.value;
+  const dset=allDisciplines();
+  ds.innerHTML='<option value="">全部学科</option>'+dset.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join('');
+  ds.value=curDs;
+  const as=$('#filterAuthor'); const curAs=as.value;
+  const aset=[...new Set(DATA.flatMap(p=>(p.authorList||[]).map(a=>a.name)).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'zh'));
+  as.innerHTML='<option value="">全部作者</option>'+aset.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');
+  as.value=curAs;
+  const ys=$('#filterYear'); const curY=ys.value;
+  const yset=[...new Set(DATA.map(p=>paperYear(p)).filter(Boolean))].sort((a,b)=>b-a);
+  ys.innerHTML='<option value="">全部年度</option>'+yset.map(y=>`<option value="${y}">${y} 年</option>`).join('');
+  ys.value=curY;
+}
+$('#btnAdd').onclick=openNewPaper;
+$('#btnChangelog').onclick=openChangelog;
+$('#btnSettings').onclick=openSettings;
+$('#btnExport').onclick=exportData;
+$('#btnImport').onclick=importData;
+$('#btnBack').onclick=goGlobal;
+$('#btnNewSub').onclick=()=>openNewSub(VIEW.paperId);
+$('#btnEditPaper').onclick=()=>openEditPaper(VIEW.paperId);
+$('#search').oninput=()=>{ if(VIEW.mode==='global') renderGlobal(); };
+$('#filterAuthor').onchange=()=>{ if(VIEW.mode==='global') renderGlobal(); };
+$('#filterStatus').onchange=()=>{ if(VIEW.mode==='global') renderGlobal(); };
+$('#filterDiscipline').onchange=()=>{ if(VIEW.mode==='global') renderGlobal(); };
+$('#filterYear').onchange=()=>{ if(VIEW.mode==='global') renderGlobal(); };
+$('#groupBy').onchange=()=>{ if(VIEW.mode==='global') renderGlobal(); };
+$('#sortBy').onchange=()=>{ if(VIEW.mode==='global') renderGlobal(); };
+$('#journalStatsSort').onchange=()=>{ journalStatsSort=$('#journalStatsSort').value; renderJournalStats(); };
+
+load(); initFilters(); initLangSwitch(); applyStaticI18n(); renderGlobal();
+renderFooter();
+</script>
+</body>
+</html>

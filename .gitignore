@@ -1,0 +1,14 @@
+# OS / filesystem
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editor / IDE
+*.swp
+*~
+.idea/
+.vscode/
+
+# Node (only needed if you keep the optional dev smoke-test scripts locally)
+node_modules/
