@@ -26,7 +26,7 @@ This project ships two independent yet functionally equivalent versions:
 
 - 论文文件夹 + 多篇投稿两层数据模型 / *Paper folder + multiple submissions, two-level data model*
 - 中英双语论文标题、作者位次 / 共一 / 通讯标记 / *Bilingual titles; author order / co-first / corresponding-author markers*
-- 期刊等级多选与优先级（中文版：JCR / CSSCI / CSCD / CCF / 北大核心 / EI / Scopus 等）/ *Multi-select journal tiers with priority (Chinese: JCR / CSSCI / CSCD / CCF / Peking Core / EI / Scopus …)*
+- 期刊等级多选与优先级（中文版：JCR / CSSCI / CSCD / CCF / 北大核心 / EI / Scopus 等）/ *Multi-select journal tiers with priority (English: JCR / EI / Scopus …)*
 - 投稿轮次与状态追踪、进展时间线 / *Submission rounds & status tracking, progress timeline*
 - 统计图表：状态分布 / 期刊等级分布 / 已接收成果分布 / 投稿期刊 TOP 5 / *Charts: status distribution / tier distribution / accepted tiers / top-5 submitted journals*
 - CSV / JSON 导入导出 / *CSV / JSON import & export*
