@@ -41,10 +41,10 @@ This project ships two independent yet functionally equivalent versions:
 
 | 维度 / Dimension | 中文版 / Chinese (`zh/`) | 英文版 / English (`en/`) |
 |---|---|---|
-| 界面语言 / UI language | 简体中文 + 繁體中文（香港），可切换 | 仅英文（无切换器） |
-| 期刊自动匹配 / Auto-match | 保留 easyScholar 开放 API（需自填密钥）| 已移除（依赖国内服务，海外不可用）|
-| 期刊等级体系 / Tiers | 含中文体系（CSSCI / CSCD / CCF / 北大核心 等）| 仅国际体系（JCR Q1–Q4 / Scopus / EI / English General Journal）|
-| 学科 / Disciplines | 中文 / 英文对照 | 英文（JCR / Web of Science 代码）|
+| 界面语言 / UI language | 简体中文 + 繁體中文（香港），可切换 *Simplified + Traditional Chinese (HK), switchable* | English only (no switcher) |
+| 期刊自动匹配 / Auto-match | 保留 easyScholar 开放 API（需自填密钥）*Keeps easyScholar open API (bring your own key)* | 不适用 / *N/A* |
+| 期刊等级体系 / Tiers | 含中文体系（CSSCI / CSCD / CCF / 北大核心 等）*Includes Chinese tiers (CSSCI / CSCD / CCF / Peking Core …)* | International tiers only (JCR Q1–Q4 / Scopus / EI / English General) |
+| 学科 / Disciplines | 中文 / 英文对照 *Chinese–English pairs* | English (JCR / Web of Science codes) |
 
 ---
 
