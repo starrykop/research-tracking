@@ -90,10 +90,12 @@
   .status-badge{padding:4px 11px;border-radius:20px;font-size:12px;font-weight:650;color:#fff;white-space:nowrap}
   .st-prep{background:var(--gray)} .st-submitted{background:var(--blue)} .st-review{background:var(--purple)}
   .st-major{background:var(--orange)} .st-minor{background:var(--teal)} .st-accepted{background:var(--green)}
-  .st-rejected{background:var(--red)} .st-withdrawn{background:#64748b}
+  .st-rejected{background:var(--red)} .st-withdrawn{background:#64748b} .st-revising{background:var(--orange)}
   .meta{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;font-size:12.5px;color:var(--sub)}
   .meta b{color:var(--ink);font-weight:600}
   .deadline-tag{padding:3px 10px;border-radius:8px;font-weight:600;font-size:12px}
+  .stage-tag{display:inline-block;vertical-align:middle;padding:2px 9px;border-radius:8px;font-weight:600;font-size:12px;white-space:nowrap}
+  .j-tag{background:#f1f5f9;color:#334155;border:1px solid #e2e8f0;white-space:normal;word-break:break-all}
   .dl-soon{background:#fffbeb;color:var(--amber);border:1px solid #fde68a}
   .dl-over{background:#fef2f2;color:var(--red);border:1px solid #fecaca}
   .dl-ok{background:#f1f5f9;color:var(--sub)}
@@ -302,9 +304,10 @@
         <option value="status">按状态分组</option>
       </select>
       <select class="filter" id="sortBy">
-        <option value="updated">按更新时间</option>
+        <option value="updated">按最近阶段</option>
         <option value="submit">按首次投稿</option>
         <option value="title">按项目名</option>
+        <option value="stage">按阶段时长</option>
       </select>
     </div>
 
@@ -358,10 +361,17 @@ const V1_KEY    = 'acadSubTracker.v1';
 const KEY_KEY   = 'acadSubTracker.secretKey';
 const AUTHORS_MEM_KEY = 'acadSubTracker.authors';   // 记忆的合作者姓名
 const SELF_KEY  = 'acadSubTracker.self';            // 本人姓名
-const APP_VERSION = '1.1';
+const APP_VERSION = '1.2';
 
 /* ===================== 更新日志 ===================== */
 const CHANGELOG = [
+  { v:'1.2', date:'2026-11-23', items:[
+    '同步云端版（v2.2.x）离线功能：项目状态新增「修改中」（涵盖大修返修与小修返修），支持筛选与按状态分组，卡片状态徽章与总览统计同步更新',
+    '新增卡片阶段时长贴图：在审项目卡片显示当前阶段与持续天数（如 外审中 12天），贴图右侧显示当前投稿期刊及最高等级',
+    '新增排序「按阶段时长」：修改中最上（时长长在前）、外审中其次（时长短在前）、已接收在已拒稿前、其余按更新时间置后；原「按更新时间」改为「按最近阶段」，改用各投稿最近进展记录的实际日期排序',
+    '总览行新增「修改中」投稿统计（大修/小修），「在审中」收窄为已投稿/外审中，不再含修改中',
+    '全部新增界面文案均补齐简体中文 / 繁體中文（香港）双语 key，语言切换实时生效',
+  ]},
   { v:'1.1', date:'2026-07-17', items:[
     '同步本地版（主线 v2.1.2）新功能：新增「投稿期刊 TOP 5」统计模块——自动统计各期刊的投稿次数与命中次数（已接收），以双柱状图展示（蓝=投稿次数，绿=命中次数）并显示命中率',
     '排序方式可选：默认按投稿次数；可切换为按命中率排序，切换即时刷新；投稿次数相同时先按期刊分区优先级（如 JCR Q1 > Q2）、再按影响因子排序，「按命中率」下该规则作为 tie-breaker 同样生效',
@@ -405,14 +415,15 @@ const I18N = {
   'zh-CN': {
     appSub: '本地记录 · 数据仅存本机 · 每篇论文独立文件夹 · 支持期刊等级（JCR / CSSCI 等）自动匹配',
     btnChangelog: '更新日志', btnSettings: '期刊API设置', btnImport: '导入', btnExport: '导出', btnAdd: '新增项目',
-    statPapers: '论文数', statWorking: '工作中', statSubs: '投稿数', statActive: '在审中', statAccepted: '已接收',
+    statPapers: '论文数', statWorking: '工作中', statSubs: '投稿数', statActive: '在审中', statRevising: '修改中', statAccepted: '已接收',
+    btnBack: '返回全部论文', statRejected: '被拒次数',
     statHitRate: '命中率', statAvgDur: '平均周期', statDecided: '已决', statDays: '天',
     chartStatus: '投稿状态分布', chartLevel: '期刊等级分布', chartAccepted: '已接收成果期刊等级分布',
     chartAcceptedNote: '（仅统计「已接收」状态）',
     searchPlaceholder: '搜索项目名 / 论文标题 / 期刊 / 作者…',
     allAuthors: '全部作者', allStatus: '全部状态', allDiscipline: '全部学科', allYear: '全部年度',
     groupNone: '不分组', groupYear: '按年度分组', groupDiscipline: '按学科分组', groupAuthor: '按作者分组', groupStatus: '按状态分组',
-    sortUpdated: '按更新时间', sortSubmit: '按首次投稿', sortTitle: '按项目名',
+    sortRecentStage: '按最近阶段', sortStage: '按阶段时长', sortSubmit: '按首次投稿', sortTitle: '按项目名',
     backBtn: '返回全部论文', editPaper: '编辑项目信息',
     paperStatusDist: '该论文投稿状态分布', paperHistory: '投稿历程',
     subRecords: '投稿记录', btnNewSub: '转投 / 新投稿',
@@ -485,14 +496,15 @@ const I18N = {
   'zh-TW': {
     appSub: '本地記錄 · 資料僅存本機 · 每篇論文獨立資料夾 · 支援期刊等級（JCR / CSSCI 等）自動匹配',
     btnChangelog: '更新日誌', btnSettings: '期刊API設定', btnImport: '匯入', btnExport: '匯出', btnAdd: '新增專案',
-    statPapers: '論文數', statWorking: '工作中', statSubs: '投稿數', statActive: '審查中', statAccepted: '已接收',
+    statPapers: '論文數', statWorking: '工作中', statSubs: '投稿數', statActive: '審查中', statRevising: '修改中', statAccepted: '已接收',
+    btnBack: '返回全部論文', statRejected: '被拒次數',
     statHitRate: '命中率', statAvgDur: '平均週期', statDecided: '已決', statDays: '天',
     chartStatus: '投稿狀態分佈', chartLevel: '期刊等級分佈', chartAccepted: '已接收成果期刊等級分佈',
     chartAcceptedNote: '（僅統計「已接收」狀態）',
     searchPlaceholder: '搜尋專案名 / 論文標題 / 期刊 / 作者…',
     allAuthors: '全部作者', allStatus: '全部狀態', allDiscipline: '全部學科', allYear: '全部年度',
     groupNone: '不分组', groupYear: '按年度分組', groupDiscipline: '按學科分組', groupAuthor: '按作者分組', groupStatus: '按狀態分組',
-    sortUpdated: '按更新時間', sortSubmit: '按首次投稿', sortTitle: '按專案名',
+    sortRecentStage: '按最近階段', sortStage: '按階段時長', sortSubmit: '按首次投稿', sortTitle: '按專案名',
     backBtn: '返回全部論文', editPaper: '編輯專案資訊',
     paperStatusDist: '該論文投稿狀態分佈', paperHistory: '投稿歷程',
     subRecords: '投稿記錄', btnNewSub: '轉投 / 新投稿',
@@ -599,9 +611,10 @@ function applyStaticI18n(){
   $('#groupBy').options[2].textContent = t('groupDiscipline');
   $('#groupBy').options[3].textContent = t('groupAuthor');
   $('#groupBy').options[4].textContent = t('groupStatus');
-  $('#sortBy').options[0].textContent = t('sortUpdated');
+  $('#sortBy').options[0].textContent = t('sortRecentStage');
   $('#sortBy').options[1].textContent = t('sortSubmit');
   $('#sortBy').options[2].textContent = t('sortTitle');
+  $('#sortBy').options[3].textContent = t('sortStage');
   // data-i18n 属性统一填充
   document.querySelectorAll('[data-i18n]').forEach(el=>{ const k=el.getAttribute('data-i18n'); if(k) el.textContent=t(k); });
   // 顶部副标题
@@ -619,11 +632,11 @@ function initLangSwitch(){
 const STATUS_LABELS = {
   'zh-CN':{
     'prep':'准备中','submitted':'已投稿','review':'外审中','major':'大修返修','minor':'小修返修','accepted':'已接收','rejected':'已拒稿','withdrawn':'已撤稿',
-    'working':'工作中','active':'在审中','completed':'完成',
+    'working':'工作中','active':'在审中','revising':'修改中','completed':'完成',
   },
   'zh-TW':{
     'prep':'準備中','submitted':'已投稿','review':'外審中','major':'大修返修','minor':'小修返修','accepted':'已接收','rejected':'已拒稿','withdrawn':'已撤稿',
-    'working':'工作中','active':'審查中','completed':'完成',
+    'working':'工作中','active':'審查中','revising':'修改中','completed':'完成',
   },
 };
 // 返回当前语言下的状态标签
@@ -651,6 +664,7 @@ const PAPER_STATUS = {
   prep:      {label:'准备中', cls:'prep',      color:'var(--gray)'},
   working:   {label:'工作中', cls:'working',   color:'var(--amber)'},
   active:    {label:'在审中', cls:'review',    color:'var(--purple)'},
+  revising:  {label:'修改中', cls:'revising',  color:'var(--orange)'},
   accepted:  {label:'已接收', cls:'accepted',  color:'var(--green)'},
   rejected:  {label:'已拒稿', cls:'rejected',  color:'var(--red)'},
   withdrawn: {label:'已撤稿', cls:'withdrawn', color:'#64748b'},
@@ -836,12 +850,57 @@ function decisionDate(sub){
   const last=tl[tl.length-1];
   return (last&&last.date)||sub.submitDate||'';
 }
+/* 最近阶段日期：timeline 最后一条事件的实际日期，无进展记录则回退投稿日期 */
+function lastStageDate(sub){
+  const tl=(sub.timeline||[]).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||'')||(a.ts||0)-(b.ts||0));
+  const last=tl[tl.length-1];
+  return (last&&last.date)||sub.submitDate||'';
+}
+/* 项目最近阶段日期：全部投稿取最大 */
+function lastStageDateOfPaper(p){
+  let best='';
+  (p.submissions||[]).forEach(s=>{ const d=lastStageDate(s); if(d&&d>best) best=d; });
+  return best;
+}
+/* 当前阶段：最近一条在审投稿及其阶段日期（卡片贴图与阶段时长排序同一口径） */
+function currentStage(p){
+  const pc=paperCurrent(p).status;
+  if(pc!=='active'&&pc!=='revising') return null;
+  const subs=(p.submissions||[]).filter(s=>ACTIVE_STATUS.includes(currentEvent(s).status));
+  if(!subs.length) return null;
+  subs.sort((a,b)=>(lastStageDate(b)||'').localeCompare(lastStageDate(a)||''));
+  const s=subs[0]; const d=lastStageDate(s);
+  if(!d) return null;
+  return {sub:s, date:d};
+}
+/* 当前阶段持续天数：从阶段实际日期算到今天，无在审阶段返回 null */
+function stageElapsedDays(p){
+  const cs=currentStage(p); if(!cs) return null;
+  const left=daysFromToday(cs.date); if(left===null) return null;
+  return Math.max(0,-left);
+}
+/* 卡片阶段时长贴图（如 外审中 12天） */
+function stageElapsedTag(p){
+  const cs=currentStage(p); if(!cs) return '';
+  const key=currentEvent(cs.sub).status;
+  const color=(STATUS[key]||STATUS.prep).color;
+  const n=stageElapsedDays(p);
+  return `<span class="stage-tag" style="background:${color}1f;color:${color};border:1px solid ${color}66">&#9202; ${SLabel(key)} ${n}${t('statDays')}</span>`;
+}
+/* 当前投稿期刊及等级（与阶段贴图同一投稿口径），跟在时长贴图右侧 */
+function currentJournalTag(p){
+  const cs=currentStage(p); if(!cs) return '';
+  const j=(cs.sub.journal||'').trim(); if(!j) return '';
+  const lvl=subZoneLabel(cs.sub);
+  return `<span class="stage-tag j-tag" title="${esc(j)}${lvl?' · '+esc(lvl):''}">&#128240; ${esc(j)}${lvl?` <b>${esc(lvl)}</b>`:''}</span>`;
+}
 /* 论文代表性状态 */
 function paperCurrent(p){
   if(p.articleStatus==='working') return {status:'working'};
   const subs=(p.submissions||[]).map(currentEvent);
   if(!subs.length) return {status:'prep'};
   if(subs.some(c=>c.status==='accepted')) return {status:'accepted'};
+  if(subs.some(c=>c.status==='major'||c.status==='minor')) return {status:'revising'};
   if(subs.some(c=>ACTIVE_STATUS.includes(c.status))) return {status:'active'};
   const all=subs.map(c=>c.status);
   if(all.every(s=>s==='rejected')) return {status:'rejected'};
@@ -1050,7 +1109,9 @@ function allSubs(){ return DATA.flatMap(p=>p.submissions||[]); }
 function renderStatsGlobal(){
   const subs=allSubs();
   const total=subs.length;
-  const active=subs.filter(s=>ACTIVE_STATUS.includes(currentEvent(s).status)).length;
+  // 修改中（大修/小修）单独统计，不计入在审中
+  const revising=subs.filter(s=>{const c=currentEvent(s).status; return c==='major'||c==='minor';}).length;
+  const active=subs.filter(s=>{const c=currentEvent(s).status; return c==='submitted'||c==='review';}).length;
   const accepted=subs.filter(s=>currentEvent(s).status==='accepted').length;
   const rejected=subs.filter(s=>currentEvent(s).status==='rejected').length;
   const decided=accepted+rejected;
@@ -1064,6 +1125,7 @@ function renderStatsGlobal(){
     {k:t('statWorking'), v:DATA.filter(p=>p.articleStatus==='working').length, dot:'var(--amber)'},
     {k:t('statSubs'), v:total, dot:'var(--blue)'},
     {k:t('statActive'), v:active, dot:'var(--purple)'},
+    {k:t('statRevising'), v:revising, dot:'var(--orange)'},
     {k:t('statAccepted'), v:accepted, dot:'var(--green)'},
     {k:t('statHitRate'), v:hitRate, unit:'%', sub:`${accepted}/${decided||0} ${t('statDecided')}`, dot:'var(--amber)'},
     {k:t('statAvgDur'), v:avgDur||'—', unit:avgDur?t('statDays'):'', dot:'var(--teal)'},
@@ -1247,6 +1309,7 @@ function renderGlobal(){
   if(fs){ papers=papers.filter(p=>{
     const pc=paperCurrent(p).status;
     if(fs==='working') return pc==='working';
+    if(fs==='revising') return pc==='revising';
     if(['accepted','rejected','withdrawn','prep'].includes(fs)) return pc===fs;
     if(ACTIVE_STATUS.includes(fs)) return pc==='active'&&(p.submissions||[]).some(s=>currentEvent(s).status===fs);
     return true;
@@ -1260,6 +1323,18 @@ function renderGlobal(){
     // 组内再按所选排序方式排列
     if(sortBy==='title') return projNameText(a).localeCompare(projNameText(b),'zh');
     if(sortBy==='submit') return (firstSubmit(b)||'').localeCompare(firstSubmit(a)||'');
+    // 按阶段时长：修改中最上（时长长在前），外审中其次（时长短在前），已接收在已拒稿前，其余按更新时间置后
+    if(sortBy==='stage'){
+      const rank=p=>{const pc=paperCurrent(p).status; if(pc==='revising')return 0; if(pc==='active')return 1; if(pc==='accepted')return 2; if(pc==='rejected')return 3; return 4;};
+      const ra=rank(a), rb=rank(b);
+      if(ra!==rb) return ra-rb;
+      if(ra===0){ const na=stageElapsedDays(a), nb=stageElapsedDays(b); if(na!==nb) return nb-na; }
+      if(ra===1){ const na=stageElapsedDays(a), nb=stageElapsedDays(b); if(na!==nb) return na-nb; }
+      return (b.updatedAt||0)-(a.updatedAt||0);
+    }
+    // 按最近阶段：用各投稿最近进展记录的实际日期，不用手动更新时间
+    const da=lastStageDateOfPaper(a), db=lastStageDateOfPaper(b);
+    if(da||db) return (db||'').localeCompare(da||'');
     return (b.updatedAt||0)-(a.updatedAt||0);
   });
   const list=$('#list');
@@ -1331,6 +1406,8 @@ function cardHTML(p){
     </div>
     <div class="meta">
       <span>&#128197; ${t('ddlFirst')}：<b>${fmtDate(first)}</b></span>
+      ${stageElapsedTag(p)}
+      ${currentJournalTag(p)}
       ${p.updatedAt?`<span>${t('ddlUpdate')}：<b>${fmtDate(new Date(p.updatedAt).toISOString())}</b></span>`:''}
       ${dlTag}
     </div>
@@ -2052,6 +2129,7 @@ function initFilters(){
   const sel=$('#filterStatus');
   STATUS_ORDER.forEach(k=>{ const o=document.createElement('option'); o.value=k; o.textContent=SL(k); sel.appendChild(o); });
   const ow=document.createElement('option'); ow.value='working'; ow.textContent=t('statWorking')+'（'+t('nextDdl')+'）'; sel.appendChild(ow);
+  const orv=document.createElement('option'); orv.value='revising'; orv.textContent=SL('revising'); sel.appendChild(orv);
 }
 /* 动态填充 学科 / 年度 / 作者 筛选项，保留当前选中值 */
 function populateFilters(){

@@ -1,4 +1,4 @@
-# Research Tracker (English version) v1.2
+# Research Tracker (English version) v1.3
 
 A single-file web app developed independently for overseas / English-speaking users, derived from "科研工作台（多语言）v1.0.2".
 
@@ -21,6 +21,7 @@ A single-file web app developed independently for overseas / English-speaking us
 
 v1.1 changes: removed CAS, SCI/SSCI/AHCI/ESCI; Scopus merged from Q1–Q4 into a single Scopus. The card badge shows the highest-priority tier.
 v1.2 changes: discipline classification fully in English (JCR / Web of Science codes, e.g. SOCIOLOGY / URBAN STUDIES); internal storage changed from Chinese names to English codes.
+v1.3 changes (2026-11-23): ported the offline-capable features from cloud v2.2.0–v2.2.4 — paper-level "Revising" status (major/minor) with filter & grouping, card stage-duration tag (current stage + elapsed days + current journal & tier), new sort options (by latest stage / by stage duration, ranked Revising > Under Review > Accepted > Rejected > others), and a "Revising" count in the overview row. Also fixed missing UI strings (btnBack / statRejected).
 
 Tiers appear as multi-select chips in the submission form; the card badge shows the highest-priority tier.
 

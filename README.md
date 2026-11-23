@@ -28,6 +28,9 @@ This project ships two independent yet functionally equivalent versions:
 - 中英双语论文标题、作者位次 / 共一 / 通讯标记 / *Bilingual titles; author order / co-first / corresponding-author markers*
 - 期刊等级多选与优先级（中文版：JCR / CSSCI / CSCD / CCF / 北大核心 / EI / Scopus 等）/ *Multi-select journal tiers with priority (English: JCR / EI / Scopus …)*
 - 投稿轮次与状态追踪、进展时间线 / *Submission rounds & status tracking, progress timeline*
+- 论文级「修改中」状态（major / minor 返修），含筛选与分组 / *Paper-level "Revising" status (major/minor), with filter & grouping*
+- 卡片阶段时长贴图（当前阶段、已停留天数、当前投稿期刊及等级）/ *Card stage-duration tag: current stage, elapsed days, current journal & tier*
+- 多种排序：更新时间 / 首次投稿 / 项目名 / 最近阶段 / 阶段时长 / *Multiple sorts: updated / first submit / title / latest stage / stage duration*
 - 统计图表：状态分布 / 期刊等级分布 / 已接收成果分布 / 投稿期刊 TOP 5 / *Charts: status distribution / tier distribution / accepted tiers / top-5 submitted journals*
 - CSV / JSON 导入导出 / *CSV / JSON import & export*
 - 本地存储，数据仅存本机浏览器 / *Local storage — data stays on your device*
